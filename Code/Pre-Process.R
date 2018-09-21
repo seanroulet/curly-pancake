@@ -17,9 +17,11 @@
 #### Set the working directory
 setwd("/Volumes/PLEXTOR/JASPR/cuESTARFM-R")
 
-#### Check if folders exist. Extracted, Processed etc.
-directoryExists("Rasters/Extracted")
+#### Check if folders exist. Extracted, Processed, tmp etc.
 
+directoryExists("Rasters/Extracted")
+directoryExists("Rasters/done")
+directoryExists("Rasters/tmp")
 
 #### Extract Bands from L7
 
