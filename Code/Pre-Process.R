@@ -38,6 +38,21 @@ rasterOptions(tmpdir = "Rasters/tmp")
 
 #### Extract Bands from L7
 
+#### Get list of L7 files.
+gzList<-list.files(getwd(), full.names=TRUE, pattern="^LE07_.*\\.gz")
+lastRow<-length(gzList)
+
+################################################
+# Load all the necessary parameters for Landsat7
+bands<-c("R","NIR")
+filePatterns<-c("B4\\.TIF$","B5\\.TIF$")
+bandFiles<-c(4,5)
+#########################################
+
+
+
+
+
 #### Extract Bands from L8
 
 
@@ -46,6 +61,25 @@ rasterOptions(tmpdir = "Rasters/tmp")
 ##### FUNCTIONS SECTION #############################
 ##### Load before running code above ################
 #####################################################
+
+######
+
+extractBands<-function(zipFile,filePatterns){
+  # extract bands from landsat zipfile, and save into directory "extracted"
+  # Inputs m
+  bandFiles<-NULL
+  
+  # set the extract directory
+  extractDirectory <-file.path(dirname(zipFile), "Rasters/extracted")
+  fileList<-untar(zipFile, list=TRUE)
+  for(i in 1:length(filePatterns)){
+    bandFiles[i]<-grep(filePatterns[i],fileList)
+  }
+  untar(zipFile, files = fileList[bandFiles], exdir = extractDirectory)
+  
+}
+
+
 
 directoryExists<-function(directory) {
   # check to see if there is a processing folder in workingDirectory 
