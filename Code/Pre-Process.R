@@ -13,3 +13,35 @@
 #####     NIR<- Band 4
 
 
+############ START Pre Processing ###########
+#### Set the working directory
+setwd("/Volumes/PLEXTOR/JASPR/cuESTARFM-R")
+
+#### Check if folders exist. Extracted, Processed etc.
+directoryExists("Rasters/Extracted")
+
+
+#### Extract Bands from L7
+
+#### Extract Bands from L8
+
+
+
+#####################################################
+##### FUNCTIONS SECTION #############################
+##### Load before running code above ################
+#####################################################
+
+directoryExists<-function(directory) {
+  # check to see if there is a processing folder in workingDirectory 
+  # and check that it is clear.
+  if(dir.exists(directory)){
+    message(paste("Nothing to do,",directory," exists"))
+  }else{
+    # if not the case, create it.
+    
+    dir.create(directory)
+  }
+  
+  
+}
