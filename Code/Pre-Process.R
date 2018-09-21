@@ -39,21 +39,35 @@ rasterOptions(tmpdir = "Rasters/tmp")
 #### Extract Bands from L7
 
 #### Get list of L7 files.
-gzList<-list.files("./Rasters/Landsat", full.names=TRUE, pattern="^LE07.*\\.gz")
+gzList<-list.files("Rasters/Landsat", full.names=TRUE, pattern="^LE07.*\\.gz")
 lastRow<-length(gzList)
 
 ################################################
 # Load all the necessary parameters for Landsat7
 bands<-c("R","NIR")
-filePatterns<-c("B4\\.TIF$","B5\\.TIF$")
-bandFiles<-c(4,5)
+filePatterns<-c("band4\\.tif$","band5\\.tif$")
 #########################################
 
-
+if(is.null(gzList)){
+  message(paste("There are no images for L7 in the folder"))
+  
+}else{
+  for (i in 1:lastRow){
+    # go through each file to process it
+    # Extract the needed bands
+    zipFile<-gzList[1]
+    extractBands(zipFile=zipFile, filePatterns)
+  }
+}
 
 
 
 #### Extract Bands from L8
+
+
+
+
+
 
 
 
@@ -63,6 +77,7 @@ bandFiles<-c(4,5)
 #####################################################
 
 ######
+##### There is a problem with the extract directory.  It stays below the zip file.
 
 extractBands<-function(zipFile,filePatterns){
   # extract bands from landsat zipfile, and save into directory "extracted"
@@ -70,7 +85,7 @@ extractBands<-function(zipFile,filePatterns){
   bandFiles<-NULL
   
   # set the extract directory
-  extractDirectory <-file.path(dirname(zipFile), "Rasters/extracted")
+  extractDirectory <-file.path(getwd(),"Rasters/extracted")
   fileList<-untar(zipFile, list=TRUE)
   for(i in 1:length(filePatterns)){
     bandFiles[i]<-grep(filePatterns[i],fileList)
