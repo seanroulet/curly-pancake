@@ -15,6 +15,7 @@
 
 ################# Load the Libraries ########
 library(raster)
+library(rgdal)
 
 
 ############ START Pre Processing ###########
@@ -24,6 +25,7 @@ setwd("/Volumes/PLEXTOR/JASPR/cuESTARFM-R")
 #### Check if folders exist. Extracted, Processed, tmp etc.
 
 directoryExists("Rasters/extracted")
+directoryExists("Rasters/reprojected")
 directoryExists("Rasters/done")
 directoryExists("Rasters/tmp")
 
