@@ -76,12 +76,11 @@ if(is.null(gzList)){
 ##### Load before running code above ################
 #####################################################
 
-######
-##### There is a problem with the extract directory.  It stays below the zip file.
+
 
 extractBands<-function(zipFile,filePatterns){
   # extract bands from landsat zipfile, and save into directory "extracted"
-  # Inputs m
+  # 
   bandFiles<-NULL
   
   # set the extract directory
