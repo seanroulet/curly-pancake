@@ -16,6 +16,7 @@
 ################# Load the Libraries ########
 library(raster)
 library(rgdal)
+library(tools)
 
 
 ############ START Pre Processing ###########
@@ -98,6 +99,20 @@ modisList<-list.files("Rasters/MODIS", full.names=TRUE, pattern=".*\\.tif$")
 modisSample<-raster(modisList[1])
 modisCRS<-crs(modisSample)
 modisExtent<-extent(modisSample)
+#####################
+lastRow<-length(modisList)
+# i<-1
+for(i in lastRow){
+  modisRaster<-raster(modisList[i])
+  modisRaster30m<-disaggregate(modisRaster, res(modisRaster)/30)  # closest number to 30
+  #res(modisRaster30m)<-30
+  modisRasterUTM<-projectRaster(modisRaster30m,crs=landsatCRS)
+  # Save the new Raster
+  filename<-paste("UTM",basename(modisList[i]),sep="_")
+  filepath<-file.path("Raster/reprojected",filename)
+  writeRaster(modisRasterUTM, filename = filepath)
+}
+
 
 landsatList<-list.files("Rasters/extracted",full.names=TRUE, pattern=".*\\.tif$")
 lastRow<-length(landsatList)
@@ -105,9 +120,7 @@ lastRow<-length(landsatList)
 for (i in lastRow){
   landsatRaster<-raster(landsatList[i])
   landsatCRS<-crs(landsatRaster)
-  landsatRasterMpr<-projectRaster(landsatRaster, crs=modisCRS)
-  landatCrop<-crop(landsatRasterMpr,modisExtent)
-  
+
 }
 
 
