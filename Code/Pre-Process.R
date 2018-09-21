@@ -90,10 +90,23 @@ if(is.null(gzList)){
   
 }
 
+#################### Open a MODIS file
+modisList<-list.files("Rasters/MODIS", full.names=TRUE, pattern=".*\\.tif$")
 
+modisSample<-raster(modisList[1])
+modisCRS<-crs(modisSample)
+modisExtent<-extent(modisSample)
 
-
-
+landsatList<-list.files("Rasters/extracted",full.names=TRUE, pattern=".*\\.tif$")
+lastRow<-length(landsatList)
+#i<-1
+for (i in lastRow){
+  landsatRaster<-raster(landsatList[i])
+  landsatCRS<-crs(landsatRaster)
+  landsatRasterMpr<-projectRaster(landsatRaster, crs=modisCRS)
+  landatCrop<-crop(landsatRasterMpr,modisExtent)
+  
+}
 
 
 
