@@ -45,24 +45,53 @@ lastRow<-length(gzList)
 ################################################
 # Load all the necessary parameters for Landsat7
 bands<-c("R","NIR")
-filePatterns<-c("band4\\.tif$","band5\\.tif$")
+filePatterns<-c("band3\\.tif$","band4\\.tif$")
 #########################################
 
 if(is.null(gzList)){
-  message(paste("There are no images for L7 in the folder"))
+  message("There are no images for L7 in the folder")
   
 }else{
   for (i in 1:lastRow){
     # go through each file to process it
     # Extract the needed bands
-    zipFile<-gzList[1]
+    zipFile<-gzList[i]
     extractBands(zipFile=zipFile, filePatterns)
   }
+  message(paste("Extracted", lastRow, "Landsat7 files"))
+  
 }
 
 
 
 #### Extract Bands from L8
+
+#### Get list of L8 files.
+gzList<-list.files("Rasters/Landsat", full.names=TRUE, pattern="^LC08.*\\.gz")
+lastRow<-length(gzList)
+
+################################################
+# Load all the necessary parameters for Landsat8
+bands<-c("R","NIR")
+filePatterns<-c("band4\\.tif$","band5\\.tif$")
+#########################################
+
+if(is.null(gzList)){
+  message("There are no images for L8 in the folder")
+  
+}else{
+  for (i in 1:lastRow){
+    # go through each file to process it
+    # Extract the needed bands
+    zipFile<-gzList[i]
+    extractBands(zipFile=zipFile, filePatterns)
+  }
+  message(paste("Extracted", lastRow, "Landsat8 files"))
+  
+}
+
+
+
 
 
 
