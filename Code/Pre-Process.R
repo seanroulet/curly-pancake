@@ -100,24 +100,25 @@ modisSample<-raster(modisList[1])
 modisCRS<-crs(modisSample)
 modisExtent<-extent(modisSample)
 #####################
-lastRow<-length(modisList)
 # i<-1
-for(i in lastRow){
+for(i in 1:length(modisList)){
   modisRaster<-raster(modisList[i])
   modisRaster30m<-disaggregate(modisRaster, res(modisRaster)/30)  # closest number to 30
   #res(modisRaster30m)<-30
   modisRasterUTM<-projectRaster(modisRaster30m,crs=landsatCRS)
   # Save the new Raster
   filename<-paste("UTM",basename(modisList[i]),sep="_")
-  filepath<-file.path("Raster/reprojected",filename)
+  filepath<-file.path("Rasters/reprojected",filename)
   writeRaster(modisRasterUTM, filename = filepath)
 }
 
 
+
+##### do Not implement yet.  NOT READY
+
 landsatList<-list.files("Rasters/extracted",full.names=TRUE, pattern=".*\\.tif$")
-lastRow<-length(landsatList)
 #i<-1
-for (i in lastRow){
+for (i in 1:length(landsatList)){
   landsatRaster<-raster(landsatList[i])
   landsatCRS<-crs(landsatRaster)
 
