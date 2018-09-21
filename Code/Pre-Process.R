@@ -39,7 +39,7 @@ rasterOptions(tmpdir = "Rasters/tmp")
 #### Extract Bands from L7
 
 #### Get list of L7 files.
-gzList<-list.files(getwd(), full.names=TRUE, pattern="^LE07_.*\\.gz")
+gzList<-list.files("./Rasters/Landsat", full.names=TRUE, pattern="^LE07.*\\.gz")
 lastRow<-length(gzList)
 
 ################################################
