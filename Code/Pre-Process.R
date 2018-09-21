@@ -13,15 +13,28 @@
 #####     NIR<- Band 4
 
 
+################# Load the Libraries ########
+library(raster)
+
+
 ############ START Pre Processing ###########
 #### Set the working directory
 setwd("/Volumes/PLEXTOR/JASPR/cuESTARFM-R")
 
 #### Check if folders exist. Extracted, Processed, tmp etc.
 
-directoryExists("Rasters/Extracted")
+directoryExists("Rasters/extracted")
 directoryExists("Rasters/done")
 directoryExists("Rasters/tmp")
+
+########  Set the tmp directory for the
+########  Raster processes.  These take up 
+########  a lot of space, so they need to be 
+########  easy to clean up after processing is
+########  done.
+
+rasterOptions(tmpdir = "Rasters/tmp")
+
 
 #### Extract Bands from L7
 
