@@ -30,7 +30,7 @@ LANDS_B1_DF=as.data.frame(LANDS_IR,byrow=TRUE)
 LANDS_B2_DF=as.data.frame(LANDS_R,byrow=TRUE)
 #----------agrego fecha al dataframe de modis b01 y b02-----------
 for(i in 1:length(MODIS_B1_IN)){
-  date=gsub(".*M_|.tif.*", "", MODIS_B1_IN[i])
+  date=as.numeric(str_replace_all(gsub(".*M_|.tif.*", "", MODIS_B1_IN[i]),pattern="_",replacement=""))
   MODIS_B1_DF$DATE[i]=date
   MODIS_B2_DF$DATE[i]=date
 }
@@ -38,7 +38,7 @@ rm(MODIS_B1_IN)
 rm(MODIS_B2_IN)
 #----------agrego fecha al dataframe de landsat b01 y b02----------
 for(i in 1:length(LANDS_R)){
-  date=gsub(".*L_|.tif.*", "", LANDS_R[i])
+  date=as.numeric(str_replace_all(gsub(".*L_|.tif.*", "", LANDS_R[i]),pattern="_",replacement=""))
   LANDS_B1_DF$DATE[i]=date
   LANDS_B2_DF$DATE[i]=date
 }
@@ -51,26 +51,11 @@ B2_REF=merge(MODIS_B2_DF,LANDS_B2_DF,by="DATE")
 #con los puntos que se busca interpolar
 MODIS_B1_PRED=MODIS_B1_DF[!(MODIS_B1_DF$DATE %in% B1_REF$DATE),]
 MODIS_B2_PRED=MODIS_B2_DF[!(MODIS_B2_DF$DATE %in% B2_REF$DATE),]
-#INPUT MODIS
-B1_INPUT_MODIS=B1_DF[,"AGREGAR NOMBRE DE COLUMNA"]
-B2_INPUT_MODIS=B2_DF[,"AGREGAR NOMBRE DE COLUMNA"]
-#INPUT LANDSAT
-B1_INPUT_LANDSAT=B1_DF[,"AGREGAR NOMBRE DE COLUMNA"]
-B2_INPUT_LANDSAT=B2_DF[,"AGREGAR NOMBRE DE COLUMNA"]
-
 
 #CONTRUIR EL ARCHIVO DE PARAMETROS PARA LA BANDA 1 Y LA BANDA 2
 #LLAMAR A cuESTARFM desde R y ejecutarlo.
 
-#--------------------
-julian_day=as.numeric(substr(date, start = 5, stop = 7))  
-origin.=as.numeric(c(month = 1, day = 1, year = MODIS6$YEAR[i]))
-date=month.day.year(julian_day, origin.)
-month=str_pad(date$month, 2, pad = "0")
-day=str_pad(date$day, 2, pad = "0")
-MODIS6$NOMBRE[i]=gsub(" ","",as.character(paste("M_",date$year,"_",month,"_",day,".tif")))
-#--------------------
-
-
+INTERP_DAYS_B1=MODIS_B1_PRED[MODIS_B1_PRED$DATE > B1_REF$DATE[1] & MODIS_B1_PRED$DATE < B1_REF$DATE[2],]
+INTERP_DAYS_B2=MODIS_B2_PRED[MODIS_B2_PRED$DATE > B2_REF$DATE[i] & MODIS_B2_PRED$DATE < B2_REF$DATE[i],]
 
 
