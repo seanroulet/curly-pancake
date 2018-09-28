@@ -10,9 +10,18 @@ library(RCurl)
 setwd("C:/Users/MC1988/Google Drive/PROFESIONALES-ACADEMICOS/AGRISAT/20180917_cuESTARFM/006_MODIS")
 #---------------------------------------------------------------------
 MODIS_pre_cuestarfm<-function(MODIS_url,band_id){
+  # Inputs
+  ## MODIS_url -> text file with URLs of MODIS images to be downloaded
+  ##              as generated from https://lpdaacsvc.cr.usgs.gov/appeears/explore
+  ##              from NASA
+  
   #armo una lista con todos los url a descargar
   MODIS_list=readLines(MODIS_url)
-  band_id="b01"
+  
+  #####Debug  
+  #band_id="b01"
+  ################
+  
   band_id=paste("_",band_id,"_",sep="")
   #print(band_id)
   # selecciono que nombre de salida quiero tener si R o IR
@@ -31,9 +40,9 @@ MODIS_pre_cuestarfm<-function(MODIS_url,band_id){
   for(i in 1:nrow(MODIS_DF)){
     #Extraigo la fecha en formato de modis original 2015325
     date=gsub(".*[_doy]([^.]+)[_].*", "\\1", MODIS_DF[i,1])
-    #agrego el año a una columna del dataframe
+    #agrego el a?o a una columna del dataframe
     MODIS_DF$YEAR[i]=as.numeric(substr(date, start = 1, stop = 4))
-    #-transformo los dias julianos en mes y dia para cada año
+    #-transformo los dias julianos en mes y dia para cada a?o
     julian_day=as.numeric(substr(date, start = 5, stop = 7))  
     origin.=as.numeric(c(month = 1, day = 1, year = MODIS_DF$YEAR[i]))
     date=month.day.year(julian_day, origin.)
