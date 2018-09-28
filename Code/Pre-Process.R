@@ -23,6 +23,7 @@ library(tools)
 #### Set the working directory
 setwd("/Volumes/PLEXTOR/JASPR/cuESTARFM-R")
 
+
 #### Check if folders exist. Extracted, Processed, tmp etc.
 
 directoryExists("Rasters/extracted")
@@ -93,18 +94,25 @@ if(is.null(gzList)){
   
 }
 
+
+
+
+
 #################### Open a MODIS file
-modisList<-list.files("Rasters/MODIS", full.names=TRUE, pattern=".*\\.tif$")
+modisList<-list.files("Rasters/MODISTest/MODIS_B2", full.names=TRUE, pattern=".*\\.tif$")
 
 modisSample<-raster(modisList[1])
 modisCRS<-crs(modisSample)
 modisExtent<-extent(modisSample)
+LandsatList<-list.files("Rasters/extracted", full.names=TRUE, pattern=".*\\.tif$")
+landsatSample<-raster(LandsatList[1])
+landsatCRS<-crs(landsatSample)
 #####################
 # i<-1
 for(i in 1:length(modisList)){
   modisRaster<-raster(modisList[i])
   #res(modisRaster30m)<-30
-  modisRasterUTM<-projectRaster(modisRaster,crs=landsatCRS)
+  modisRasterUTM<-projectRaster(modisRaster,crs=landsatCRS)  # need to load the landsatCRS first!
   modisRasterUTM30m<-disaggregate(modisRasterUTM, res(modisRaster)/30)  # closest number to 30
   ### reproject again so that the pixels are exactly 30M.
   modisRasterUTM30m<-projectRaster(modisRasterUTM30m, crs=landsatCRS, res=30)
@@ -125,7 +133,7 @@ landsatList<-list.files("Rasters/extracted",full.names=TRUE, pattern=".*\\.tif$"
 for (i in 1:length(landsatList)){
   landsatRaster<-raster(landsatList[i])
   landsatCRS<-crs(landsatRaster)
-  landsatCrop<-crop(landsatRaster,modisUTMExtent)
+  landsatCrop<-crop(landsatRaster,modisUTM30m)
   filename<-paste("UTM",basename(landsatList[i]),sep="_")
   filepath<-file.path("Rasters/reprojected",filename)
   
