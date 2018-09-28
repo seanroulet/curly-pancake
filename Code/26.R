@@ -1,5 +1,5 @@
 #este script es para ordenar y los rasters landsat 7 y landsat 8  a usar en el archivo de parametros
-#necesario para ejecutar el cuESTARFM
+#necesario para ejecutar el cuESTARFM.
 #---------------------------------------------------------------------
 rm(list=ls())
 getwd()
