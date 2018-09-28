@@ -126,9 +126,7 @@ for(i in 1:length(modisList)){
 
 
 
-##### do Not implement yet.  NOT READY
-## Rasters are not cropping exactly.
-#######
+
 
 landsatList<-list.files("Rasters/extracted",full.names=TRUE, pattern=".*\\.tif$")
 #i<-1
