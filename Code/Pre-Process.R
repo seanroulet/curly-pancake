@@ -28,7 +28,7 @@ setwd("/Volumes/PLEXTOR/JASPR/cuESTARFM-R")
 
 directoryExists("Rasters/extracted")
 directoryExists("Rasters/reprojected")
-directoryExists("Rasters/done")
+directoryExists("Rasters/Ready_for_cuESTARFM")
 directoryExists("Rasters/tmp")
 
 ########  Set the tmp directory for the
@@ -64,6 +64,17 @@ if(is.null(gzList)){
   }
   message(paste("Extracted", lastRow, "Landsat7 files"))
   
+  ## rename the files to put the R or NIR
+  for(j in 1:length(filePatterns)){
+
+    BandFiles<-list.files("Rasters/extracted",full.names=TRUE, pattern=filePatterns[j])
+    for(k in 1:length(BandFiles)){
+      myExt<-file_ext(BandFiles[k])
+      myNewFileName<-paste(file_path_sans_ext(BandFiles[k]),"_", bands[j],".",myExt, sep="")
+      file.rename(BandFiles[k], myNewFileName)
+    }
+  }
+  
 }
 
 
@@ -92,6 +103,17 @@ if(is.null(gzList)){
   }
   message(paste("Extracted", lastRow, "Landsat8 files"))
   
+  
+  ## rename the files to put the R or NIR
+  for(j in 1:length(filePatterns)){
+    
+    BandFiles<-list.files("Rasters/extracted",full.names=TRUE, pattern=filePatterns[j])
+    for(k in 1:length(BandFiles)){
+      myExt<-file_ext(BandFiles[k])
+      myNewFileName<-paste(file_path_sans_ext(BandFiles[k]),"_", bands[j],".",myExt, sep="")
+      file.rename(BandFiles[k], myNewFileName)
+    }
+  }
 }
 
 
