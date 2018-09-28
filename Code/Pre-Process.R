@@ -6,11 +6,11 @@
 
 ##### Extract Landsat BANDS.
 ##### Bands of interest are 
-##### L8  R<-Band 4  
-#####     NIR<- Band 5
+##### L8  R<- band4  
+#####     NIR<- band5
 #####
-##### L7  R<-Band 3
-#####     NIR<- Band 4
+##### L7  R<- band3
+#####     NIR<- band4
 
 
 ################# Load the Libraries ########
@@ -133,7 +133,7 @@ landsatList<-list.files("Rasters/extracted",full.names=TRUE, pattern=".*\\.tif$"
 for (i in 1:length(landsatList)){
   landsatRaster<-raster(landsatList[i])
   landsatCRS<-crs(landsatRaster)
-  landsatCrop<-crop(landsatRaster,modisUTM30m)
+  landsatCrop<-crop(landsatRaster,modisRasterUTM30m, snap='near')
   filename<-paste("UTM",basename(landsatList[i]),sep="_")
   filepath<-file.path("Rasters/reprojected",filename)
   
