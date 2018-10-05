@@ -27,9 +27,9 @@ initializeSettings<-function(workingDirectory="C:/Users/MC1988/Google Drive/PROF
   setwd(workingDirectory)
   
   # set the variable for the temp directory
-  rasterTempDirectory<-file.path(getwd(),"tmp")
-  extractedDirectory<-file.path(getwd(),"extracted")
-  doneDirectory<-file.path(getwd(),"done")
+  rasterTempDirectory<-file.path(workingDirectory,"tmp")
+  extractedDirectory<-file.path(workingDirectory,"extracted")
+  doneDirectory<-file.path(workingDirectory,"done")
   
   # check that the directory exists
   directoryExists(rasterTempDirectory)
@@ -40,7 +40,7 @@ initializeSettings<-function(workingDirectory="C:/Users/MC1988/Google Drive/PROF
   #rasterOptions(tmpdir = rasterTempDirectory)
   
   # clean the extract Directory just in case there is something lurking there
-  extractedFiles<-list.files(file.path(getwd(),"extracted"), full.names=TRUE)
+  extractedFiles<-list.files(file.path(workingDirectory,"extracted"), full.names=TRUE)
   file.remove(extractedFiles)
   
   
