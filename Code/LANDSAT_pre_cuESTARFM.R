@@ -24,7 +24,7 @@ directoryExists<-function(directory) {
 initializeSettings<-function(workingDirectory="C:/Users/MC1988/Google Drive/PROFESIONALES-ACADEMICOS/AGRISAT/20180917_cuESTARFM/"){
   # set the working directory
   # in Windows use the "/"
-  setwd("C:/Users/MC1988/Google Drive/PROFESIONALES-ACADEMICOS/AGRISAT/20180917_cuESTARFM/")
+  setwd(workingDirectory)
   
   # set the variable for the temp directory
   rasterTempDirectory<-file.path(getwd(),"tmp")
@@ -39,14 +39,16 @@ initializeSettings<-function(workingDirectory="C:/Users/MC1988/Google Drive/PROF
   # set the raster temp directory
   #rasterOptions(tmpdir = rasterTempDirectory)
   
+  # clean the extract Directory just in case there is something lurking there
+  extractedFiles<-list.files(file.path(getwd(),"extracted"), full.names=TRUE)
+  file.remove(extractedFiles)
+  
+  
 }
 #-------------------------------------------------------
 extractBands<-function(zipFile,filePatterns){
   # extract bands from landsat zipfile, and save into directory "extracted"
   #
-  # clean the extract Directory just in case there is something lurking there
-  extractedFiles<-list.files(file.path(getwd(),"extracted"), full.names=TRUE)
-  file.remove(extractedFiles)
   bandFiles<-NULL
   
   # set the extract directory
@@ -63,21 +65,25 @@ extractBands<-function(zipFile,filePatterns){
 processSatFiles<-function(folder=getwd(), satellite="L8",newCRS="+proj=utm +zone=20 +south +datum=WGS84 +units=m +no_defs"){
   gzList<-NULL
   if(satellite=="L8"){
-    gzList<-list.files(getwd(), full.names=TRUE, pattern="^LC08.*\\.gz")
+    # for Windows use "LC08*.gz"
+    gzList<-list.files(folder, full.names=TRUE, pattern="^LC08.*\\.gz")
     lastRow<-length(gzList)
     ################################################
     # Load all the necessary parameters for Landsat8
     bands<-c("R","NIR")
+    # for Windows use "*_band4.TIF", "*_band5.TIF"
     filePatterns<-c("_band4//.TIF$","_band5//.TIF$")
     bandFiles<-c(4,5)
     #########################################
   }
   if(satellite=="L7"){
-    gzList<-list.files(getwd(), full.names=TRUE, pattern="^LE07.*//.gz")
+    # for windows use "LE07*.gz"
+    gzList<-list.files(folder, full.names=TRUE, pattern="^LE07.*//.gz")
     lastRow<-length(gzList)
     ################################################
     # Load all the necessary parameters for Landsat7
     bands<-c("R","NIR")
+    # for Windos use "*B3.TIF", "*B4.TIF"
     filePatterns<-c("B3//.TIF$","B4//.TIF$")
     bandFiles<-c(3,4)
     #########################################
