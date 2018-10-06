@@ -50,7 +50,7 @@ cuESTARFM_pre_process(Modis_URL_List="Rasters/MODIS/GWE.txt",Index_to_calculate=
   reproject_MODIS_to_Landsat(MODIS_folder="Rasters/MODIS/MODIS_B2")
   
   # crop Landsat images to MODIS extent
-  crop_LANDSAT_to_MODIS
+  crop_LANDSAT_to_MODIS()
   
   # Calculate INDICES for MODIS
   
