@@ -7,7 +7,7 @@
 library(stringr)
 library(chron)
 library(RCurl)
-setwd("C:/Users/MC1988/Google Drive/PROFESIONALES-ACADEMICOS/AGRISAT/20180917_cuESTARFM/006_MODIS")
+setwd("C:/Users/MC1988/Google Drive/PROFESIONALES-ACADEMICOS/AGRISAT/20180917_cuESTARFM/TEST_05_NQN/MODIS/")
 #---------------------------------------------------------------------
 MODIS_pre_cuestarfm<-function(MODIS_url,band_id){
   # Inputs
@@ -31,11 +31,11 @@ MODIS_pre_cuestarfm<-function(MODIS_url,band_id){
   MODIS_DF=as.data.frame(grep(band_id, MODIS_list,value=TRUE),bycol=T)
   MODIS_DF=data.frame(lapply(MODIS_DF,as.character),stringsAsFactors=FALSE)
   #nombro la columna de df de acuerdo al nombre de banda R o IR
-  names(MODIS_DF)=band_out_id
+  #names(MODIS_DF)=band_out_id
   #Genero una carpeta donde se guardaran los rasters como /MODIS_R
   #getwd()
-  dir.create(paste("./MODIS_",band_out_id,sep=""),showWarnings = FALSE)
-  dest_path=paste(getwd(),"/MODIS_",band_out_id,"/",sep="")
+  directoryExists(paste("Rasters/MODIS/MODIS_",band_out_id,sep=""))
+  dest_path=paste("Rasters/MODIS/MODIS_",band_out_id,"/",sep="")
   #i=1
   for(i in 1:nrow(MODIS_DF)){
     #Extraigo la fecha en formato de modis original 2015325
@@ -49,7 +49,7 @@ MODIS_pre_cuestarfm<-function(MODIS_url,band_id){
     month=str_pad(date$month, 2, pad = "0")
     day=str_pad(date$day, 2, pad = "0")
     #genero una columna del df con el formato de nombre que necesita cuESTARFM
-    MODIS_DF$NOMBRE[i]=paste("M_",date$year,"_",month,"_",day,".tif",sep="")
+    MODIS_DF$NOMBRE[i]=paste("M_",date$year,"_",month,"_",day,"_",band_out_id,".tif",sep="")
     #------descargo el raster para el renglon i del dataframe
     #lo guardo en el directorio creado y con el nombre_i
     URL <- as.character(MODIS_DF[i,1])
