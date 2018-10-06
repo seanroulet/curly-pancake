@@ -16,7 +16,7 @@ sys_command=function(folder="PARAMS",cu_path="/home/wtelectronica/cuESTARFM-mast
     exec_sentence=paste(cu_path,params_list[i],sep=" ")
     #ejecuto el comando
     system(exec_sentence,wait=TRUE,show.output.on.console=TRUE)
-    
+  }
     
   }
   
