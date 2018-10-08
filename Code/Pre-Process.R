@@ -279,7 +279,7 @@ crop_LANDSAT_to_MODIS<-function(MODIS_folder="Rasters/MODIS/REPROJECTED",Landsat
 
     landsatCrop<-crop(landsatRaster,modisSample, snap='near')
     filename<-basename(landsatList[i])
-    filepath<-file.path("Rasters/CROPPED",filename)
+    filepath<-file.path("Rasters/LANDSAT/CROPPED",filename)
     
     writeRaster(landsatCrop, filename = filepath)
     
