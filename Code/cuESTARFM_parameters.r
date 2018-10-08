@@ -1,7 +1,7 @@
 
 ######## ARGUMENTOS DE PRUEBA PARA USAR CON LA FUNCION
-MODIS_folder="X:/Google Drive/PROFESIONALES-ACADEMICOS/AGRISAT/20180917_cuESTARFM/006_MODIS/MODIS_R"
-LANDSAT_folder="X:/Google Drive/PROFESIONALES-ACADEMICOS/AGRISAT/20180917_cuESTARFM/004_LANDSAT/LANDS_R"
+MODIS_folder="C:/Users/MC1988/Google Drive/PROFESIONALES-ACADEMICOS/AGRISAT/20180917_cuESTARFM/007_testVM/TEST_06/MODIS"
+LANDSAT_folder="C:/Users/MC1988/Google Drive/PROFESIONALES-ACADEMICOS/AGRISAT/20180917_cuESTARFM/007_testVM/TEST_06/LANDSAT"
 cuESTARFM_parameters="C:/Users/MC1988/Google Drive/PROFESIONALES-ACADEMICOS/AGRISAT/20180917_cuESTARFM/002_cuESTARFM parameters example/parameters_example.txt"
 #############################################
 #############################################
@@ -26,12 +26,12 @@ SINT_LS_path=paste(getwd(),"/SINT_LS/",sep="")
 #leo linea por linea el ejemplo de los parametros del programa
 cuESTARFM_parameters=readLines(cuESTARFM_parameters)
 #--------------------------------------------
-MODIS_IN=gsub("/ ","/",list.files(MODIS_folder,pattern="\\.tif$",full.names = T))
-LANDSAT_IN=gsub("/ ","/",list.files(LANDSAT_folder,pattern="\\.tif$",full.names = T))
+MODIS_IN=gsub("/ ","/",list.files(MODIS_folder,pattern=".tif",full.names = T))
+LANDSAT_IN=gsub("/ ","/",list.files(LANDSAT_folder,pattern=".tif",full.names = T))
 #--------------------------------------------
-MODIS_IN=as.data.frame(MODIS_IN,byrow=TRUE)
+MODIS_IN=as.data.frame(basename(MODIS_IN),byrow=TRUE)
 names(MODIS_IN)="MODIS"
-LANDSAT_IN=as.data.frame(LANDSAT_IN,byrow=TRUE)
+LANDSAT_IN=as.data.frame(basename(LANDSAT_IN),byrow=TRUE)
 names(LANDSAT_IN)="LANDSAT"
 #----------agrego fecha a los DF MODIS Y LANDSAT-------
 
@@ -59,12 +59,12 @@ for(i in 1:(nrow(MODISLANDSAT_REF)-1)){
   #--------------------------------------------------
   MODIS_CAPTURED=MODIS_PRED[(MODIS_PRED$DATE > MODISLANDSAT_REF$DATE[i] & MODIS_PRED$DATE < MODISLANDSAT_REF$DATE[i+1]),]
   #genero una lista con los nombres a incluir
-  MODIS_names=paste(MODIS_CAPTURED$MODIS, collapse = " ")
+  MODIS_names=paste(basename(MODIS_CAPTURED$MODIS), collapse = " ")
   #rm(MODIS_CAPTURED)
   #--------------------------------------------------
   #agrego los nombres a usar para generar los landsat sinteticos
-  MODIS_CAPTURED$SINT_LANDSAT=paste(SINT_LS_path,"SI_LS_",gsub(".*M_|$.*","",MODIS_CAPTURED$MODIS[i]),sep="")
-  SINT_LS_names= paste(MODIS_CAPTURED$SINT_LANDSAT, collapse = " ")
+  MODIS_CAPTURED$SINT_LANDSAT=paste("SI_LS_",gsub(".*M_|$.*","",MODIS_CAPTURED$MODIS[i]),sep="")
+  SINT_LS_names= paste(basename(MODIS_CAPTURED$SINT_LANDSAT), collapse = " ")
   #Modifico el archivo de parametros
   #modifico las filas del archivo de texto que se actualizan para cada corrida del programa
   cuESTARFM_parameters[8]=paste("  IN_PAIR_MODIS_FNAME =",MODISLANDSAT_REF$MODIS[i],MODISLANDSAT_REF$MODIS[i+1])
@@ -78,5 +78,6 @@ for(i in 1:(nrow(MODISLANDSAT_REF)-1)){
   #############################################################################
   #############      FIN                    ###################################
   #############################################################################
-}}
+}
+}
 
