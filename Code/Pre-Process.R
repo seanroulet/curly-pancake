@@ -363,7 +363,7 @@ directoryExists<-function(directory) {
   }else{
     # if not the case, create it.
     
-    dir.create(directory)
+    dir.create(directory,recursive=TRUE)
   }
   
   
