@@ -1,27 +1,14 @@
 
-######## ARGUMENTOS DE PRUEBA PARA USAR CON LA FUNCION
-MODIS_folder="C:/Users/MC1988/Google Drive/PROFESIONALES-ACADEMICOS/AGRISAT/20180917_cuESTARFM/007_testVM/TEST_06/MODIS"
-LANDSAT_folder="C:/Users/MC1988/Google Drive/PROFESIONALES-ACADEMICOS/AGRISAT/20180917_cuESTARFM/007_testVM/TEST_06/LANDSAT"
-cuESTARFM_parameters="C:/Users/MC1988/Google Drive/PROFESIONALES-ACADEMICOS/AGRISAT/20180917_cuESTARFM/002_cuESTARFM parameters example/parameters_example.txt"
-#############################################
-#############################################
-
-
-
 #--------------------------------------------
-cuESTARFM_parameters_file<-function(MODIS_folder,LANDSAT_folder,cuESTARFM_parameters){
+cuESTARFM_parameters_file<-function(MODIS_folder="Rasters/MODIS/REPROJECTED",LANDSAT_folder="Rasters/LANDSAT/CROPPED",cuESTARFM_parameters="C:/Users/MC1988/Google Drive/PROFESIONALES-ACADEMICOS/AGRISAT/20180917_cuESTARFM/002_cuESTARFM parameters example/parameters_example.txt"){
 #se procesa de a un par de bandas MODIS-LANDSAT por ejecucion Y se genera el archivo para ejecutar cuESTARFM
   library(stringr)
   library(chron)
   library(raster)
   library(data.table)
 #--------------------------------------------
-#creo una carpeta donde guardar los archivos de parametros
-dir.create("./PARAMS",showWarnings = FALSE)
-param_path=paste(getwd(),"/PARAMS/",sep="")
-#creo una carpeta donde se guardaran los landsats sinteticos
-dir.create("./SINT_LS",showWarnings = FALSE)
-SINT_LS_path=paste(getwd(),"/SINT_LS/",sep="")
+param_path="Code/PARAMS/"
+SINT_LS_path="Rasters/PROCESSED"
 #-------------------------------------------- 
 #leo linea por linea el ejemplo de los parametros del programa
 cuESTARFM_parameters=readLines(cuESTARFM_parameters)
@@ -66,7 +53,7 @@ for(i in 1:(nrow(MODISLANDSAT_REF)-1)){
   MODIS_CAPTURED$SINT_LANDSAT=paste("SI_LS_",gsub(".*M_|$.*","",MODIS_CAPTURED$MODIS[i]),sep="")
   SINT_LS_names= paste(basename(MODIS_CAPTURED$SINT_LANDSAT), collapse = " ")
   #Modifico el archivo de parametros
-  #modifico las filas del archivo de texto que se actualizan para cada corrida del programa
+  #modifico las filas del archivo de texto que se actualizan para cada ejecucion del programa
   cuESTARFM_parameters[8]=paste("  IN_PAIR_MODIS_FNAME =",MODISLANDSAT_REF$MODIS[i],MODISLANDSAT_REF$MODIS[i+1])
   cuESTARFM_parameters[12]=paste(" IN_PAIR_LANDSAT_FNAME =",MODISLANDSAT_REF$LANDSAT[i],MODISLANDSAT_REF$LANDSAT[i+1])
   cuESTARFM_parameters[17]=paste(" IN_PDAY_MODIS_FNAME =",MODIS_names)
