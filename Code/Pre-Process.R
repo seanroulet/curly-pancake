@@ -80,6 +80,7 @@ create_Directories_for_cuESTARFM<-function(){
   directoryExists("Rasters/Ready_for_cuESTARFM")
   directoryExists("Rasters/tmp")
   directoryExists("Rasters/INDEX")
+  directoryExists("Rasters/PROCESSED")
   
   
 }
