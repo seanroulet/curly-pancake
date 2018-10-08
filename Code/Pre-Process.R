@@ -105,7 +105,7 @@ download_MODIS_from_File_and_rename_to_band<-function(MODIS_url,band_id="b01"){
   #print(band_id)
   # selecciono que nombre de salida quiero tener si R o IR
   if(band_id=="_b01_"){band_out_id="R"}
-  if(band_id=="_b02_"){band_out_id="IR"}
+  if(band_id=="_b02_"){band_out_id="NIR"}
   #Genero un dataframe solo con la banda requerida
   MODIS_DF=as.data.frame(grep(band_id, MODIS_list,value=TRUE),bycol=T)
   MODIS_DF=data.frame(lapply(MODIS_DF,as.character),stringsAsFactors=FALSE)
@@ -307,7 +307,7 @@ calcNDVI<-function(rasterStack){
                           (R-NIR)/(R+NIR)
                         )
                       })
-  #  ndviRaster<-removeNDVIextremes(ndviRaster)
+    ndviRaster<-removeNDVIextremes(ndviRaster)
   return(ndviRaster)
 }
 
@@ -365,4 +365,12 @@ directoryExists<-function(directory) {
   }
   
   
+}
+
+removeNDVIextremes<-function(r1){
+  # remove values below -0.995, and make them -0.995
+  r1[r1<-0.995]=-0.995
+  # remove values above 0.995 and make them 0.995
+  r1[r1>0.995]=0.995
+  return(r1)
 }
