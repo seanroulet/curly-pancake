@@ -21,7 +21,7 @@ library(stringr)
 library(chron)
 library(RCurl)
 
-cuESTARFM_pre_process(Modis_URL_List="Rasters/MODIS/GWE.txt",Index_to_calculate="NDVI"){
+cuESTARFM_pre_process(Modis_URL_List="C:/Users/MC1988/Desktop/Rasters/MODIS/jesus_maria.txt",Index_to_calculate="NDVI"){
   # Create all the necessary directories
   
   create_Directories_for_cuESTARFM()
@@ -36,9 +36,9 @@ cuESTARFM_pre_process(Modis_URL_List="Rasters/MODIS/GWE.txt",Index_to_calculate=
   rasterOptions(tmpdir = "Rasters/tmp")
   
   #Download and Rename b01
-  download_MODIS_from_File_and_rename_to_band(Modis_URL_list, "b01")
+  download_MODIS_from_File_and_rename_to_band(Modis_URL_List, "b01")
   #Download and Rename b02
-  download_MODIS_from_File_and_rename_to_band(Modis_URL_list, "b02")
+  download_MODIS_from_File_and_rename_to_band(Modis_URL_List, "b02")
   
   # Extract the LANDSAT bands from the LANDSAT tar.gz
   extract_LANDSAT_for_cuESTARFM()
@@ -151,7 +151,7 @@ extract_LANDSAT_for_cuESTARFM<-function(LANDSAT_folder="Rasters/LANDSAT"){
   ################################################
   # Load all the necessary parameters for Landsat7
   bands<-c("R","NIR")
-  filePatterns<-c("band3\\.tif$","band4\\.tif$")
+  filePatterns<-c("B3\\.tif$","B4\\.tif$")
   #########################################
   
   if(is.null(gzList)){
@@ -179,7 +179,7 @@ extract_LANDSAT_for_cuESTARFM<-function(LANDSAT_folder="Rasters/LANDSAT"){
   ################################################
   # Load all the necessary parameters for Landsat8
   bands<-c("R","NIR")
-  filePatterns<-c("band4\\.tif$","band5\\.tif$")
+  filePatterns<-c("B4\\.tif$","B5\\.tif$")
   #########################################
   
   if(is.null(gzList)){
@@ -445,3 +445,23 @@ cuESTARFM_parameters_file<-function(MODIS_folder="Rasters/MODIS/REPROJECTED",LAN
     #############################################################################
   }
 }
+
+#--------------------------------------------------------------------------------
+ifPlatform<-function(ifWindows,ifUnix){
+  
+  #### if UNIX
+  if(.Platform$OS.type == "unix") {
+    myAnswer <- ifUnix
+    
+    ### if WINDOWS
+  } else if(.Platform$OS.type == "windows"){
+    myAnswer <- ifWindows
+    
+    ### if unknown.
+  } else {
+    myAnswer <- "Error  Unkown Platform"
+  }
+  return(myAnswer)
+}
+#--------------------------------------------------------------------------------
+
