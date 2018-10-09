@@ -145,13 +145,13 @@ extract_LANDSAT_for_cuESTARFM<-function(LANDSAT_folder="Rasters/LANDSAT"){
   # Extract bands for L7
   
   #### Get list of L7 files.
-  gzList<-list.files(LANDSAT_folder, full.names=TRUE, pattern="^LE07.*\\.gz")
+  gzList<-list.files(LANDSAT_folder, full.names=TRUE, pattern=ifPlatform("LE07*.gz","^LE07.*\\.gz"))
   lastRow<-length(gzList)
   
   ################################################
   # Load all the necessary parameters for Landsat7
   bands<-c("R","NIR")
-  filePatterns<-c("B3\\.tif$","B4\\.tif$")
+  filePatterns<-c(ifPlatform("B3*..tif","B3\\.tif$"),ifPlatform("B4*..tif","B4\\.tif$"))
   #########################################
   
   if(is.null(gzList)){
@@ -173,13 +173,14 @@ extract_LANDSAT_for_cuESTARFM<-function(LANDSAT_folder="Rasters/LANDSAT"){
   #### Extract Bands from L8
   
   #### Get list of L8 files.
-  gzList<-list.files(LANDSAT_folder, full.names=TRUE, pattern="^LC08.*\\.gz")
+  gzList<-list.files(LANDSAT_folder, full.names=TRUE, pattern=ifPlatform("LC08*.gz","^LC08.*\\.gz"))
   lastRow<-length(gzList)
   
   ################################################
   # Load all the necessary parameters for Landsat8
   bands<-c("R","NIR")
-  filePatterns<-c("B4\\.tif$","B5\\.tif$")
+  #filePatterns<-c("B4\\.tif$","B5\\.tif$")
+  filePatterns<-c(ifPlatform("B4*..tif","B4\\.tif$"),ifPlatform("B5*..tif","B5\\.tif$"))
   #########################################
   
   if(is.null(gzList)){
@@ -204,7 +205,7 @@ rename_LANDSAT_tif_R_NIR<-function(filePatterns, bands, Extracted_folder="Raster
   ## rename the files to put the R or NIR
   for(j in 1:length(filePatterns)){
     
-    BandFiles<-list.files(Extracted_folder,full.names=TRUE, pattern=filePatterns[j])
+    BandFiles<-list.files(Extracted_folder,full.names=TRUE, pattern=filePatterns[j],ignore.case=TRUE)
     for(k in 1:length(BandFiles)){
       myExt<-file_ext(BandFiles[k])
       myNewFileName<-paste(file_path_sans_ext(BandFiles[k]),"_", bands[j],".",myExt, sep="")
@@ -234,10 +235,10 @@ reproject_MODIS_to_Landsat<-function(MODIS_folder="Rasters/MODIS/MODIS_B1",Lands
   #################### Open a MODIS file
   ### Loads a MODIS raster from download and reprojects it to a Landsat CRS
   ####################
-  modisList<-list.files(MODIS_folder, full.names=TRUE, pattern=".*\\.tif$")
+  modisList<-list.files(MODIS_folder, full.names=TRUE,ignore.case=TRUE, pattern=ifPlatform(".tif",".*\\.tif$"))
   
   # load a LANDSAT sample so we can get the crs, etc.
-  landsatList<-list.files(Landsat_folder, full.names=TRUE, pattern=".*\\.tif$")
+  landsatList<-list.files(Landsat_folder, full.names=TRUE,ignore.case=TRUE, pattern=ifPlatform(".tif",".*\\.tif$"))
   landsatSample<-raster(landsatList[1])
   landsatCRS<-crs(landsatSample)
   
@@ -271,10 +272,10 @@ crop_LANDSAT_to_MODIS<-function(MODIS_folder="Rasters/MODIS/REPROJECTED",Landsat
   ################
   
   # get a sample MODIS file so we can crop to it.
-  modisList<-list.files(MODIS_folder, full.names=TRUE, pattern=".*\\.tif$")
+  modisList<-list.files(MODIS_folder, full.names=TRUE,ignore.case=TRUE,pattern=ifPlatform(".tif",".*\\.tif$"))
   modisSample<-raster(modisList[1])
   
-  landsatList<-list.files(Landsat_folder,full.names=TRUE, pattern=".*\\.tif$")
+  landsatList<-list.files(Landsat_folder,full.names=TRUE,ignore.case=TRUE,pattern=ifPlatform(".tif",".*\\.tif$"))
   #i<-1
   for (i in 1:length(landsatList)){
     landsatRaster<-raster(landsatList[i])
@@ -391,8 +392,8 @@ cuESTARFM_parameters_file<-function(MODIS_folder="Rasters/MODIS/REPROJECTED",LAN
   #leo linea por linea el ejemplo de los parametros del programa
   cuESTARFM_parameters=readLines(cuESTARFM_parameters)
   #--------------------------------------------
-  MODIS_IN=gsub("/ ","/",list.files(MODIS_folder,pattern=".tif",full.names = T))
-  LANDSAT_IN=gsub("/ ","/",list.files(LANDSAT_folder,pattern=".tif",full.names = T))
+  MODIS_IN=gsub("/ ","/",list.files(MODIS_folder,full.names=T,ignore.case=TRUE,pattern=ifPlatform(".tif",".*\\.tif$")))
+  LANDSAT_IN=gsub("/ ","/",list.files(LANDSAT_folder,full.names=T,ignore.case=TRUE,pattern=ifPlatform(".tif",".*\\.tif$")))
   #--------------------------------------------
   MODIS_IN=as.data.frame(basename(MODIS_IN),byrow=TRUE)
   names(MODIS_IN)="MODIS"
