@@ -20,6 +20,7 @@ library(tools)
 library(stringr)
 library(chron)
 library(RCurl)
+library(xfun)
 
 cuESTARFM_pre_process(Modis_URL_List="C:/Users/MC1988/Desktop/Rasters/MODIS/jesus_maria.txt",Index_to_calculate="NDVI"){
   # Create all the necessary directories
@@ -142,16 +143,43 @@ download_MODIS_from_File_and_rename_to_band<-function(MODIS_url,band_id="b01"){
 }
 
 extract_LANDSAT_for_cuESTARFM<-function(LANDSAT_folder="Rasters/LANDSAT"){
-  # Extract bands for L7
-  
-  #### Get list of L7 files.
-  gzList<-list.files(LANDSAT_folder, full.names=TRUE, pattern=ifPlatform("LE07*.gz","^LE07.*\\.gz"))
+  # Extract bands for L5
+  #### Get list of L5 files.
+  gzList<-list.files(LANDSAT_folder, full.names=TRUE, pattern="^LT05.*\\.gz")
   lastRow<-length(gzList)
   
   ################################################
   # Load all the necessary parameters for Landsat7
   bands<-c("R","NIR")
-  filePatterns<-c(ifPlatform("B3*..tif","B3\\.tif$"),ifPlatform("B4*..tif","B4\\.tif$"))
+  filePatterns<-c(ifPlatform("B3.tif","B3\\.tif$"),ifPlatform("B4.tif","B4\\.tif$"))
+  #########################################
+  
+  if(is.null(gzList)){
+    message("There are no images for L5 in the folder")
+    
+  }else{
+    for (i in 1:lastRow){
+      # go through each file to process it
+      # Extract the needed bands
+      zipFile<-gzList[i]
+      extractBands(zipFile=zipFile, filePatterns)
+    }
+    message(paste("Extracted", lastRow, "Landsat 5 files"))
+    
+    rename_LANDSAT_tif_R_NIR(filePatterns = filePatterns, bands = bands)
+    
+  }
+  
+  # Extract bands for L7
+  
+  #### Get list of L7 files.
+  gzList<-list.files(LANDSAT_folder, full.names=TRUE, pattern="^LE07.*\\.gz")
+  lastRow<-length(gzList)
+  
+  ################################################
+  # Load all the necessary parameters for Landsat7
+  bands<-c("R","NIR")
+  filePatterns<-c(ifPlatform("B3.tif","B3\\.tif$"),ifPlatform("B4.tif","B4\\.tif$"))
   #########################################
   
   if(is.null(gzList)){
@@ -173,14 +201,14 @@ extract_LANDSAT_for_cuESTARFM<-function(LANDSAT_folder="Rasters/LANDSAT"){
   #### Extract Bands from L8
   
   #### Get list of L8 files.
-  gzList<-list.files(LANDSAT_folder, full.names=TRUE, pattern=ifPlatform("LC08*.gz","^LC08.*\\.gz"))
+  gzList<-list.files(LANDSAT_folder, full.names=TRUE, pattern="^LC08.*\\.gz")
   lastRow<-length(gzList)
   
   ################################################
   # Load all the necessary parameters for Landsat8
   bands<-c("R","NIR")
   #filePatterns<-c("B4\\.tif$","B5\\.tif$")
-  filePatterns<-c(ifPlatform("B4*..tif","B4\\.tif$"),ifPlatform("B5*..tif","B5\\.tif$"))
+  filePatterns<-c("band4.tif","band5.tif")
   #########################################
   
   if(is.null(gzList)){
@@ -196,7 +224,7 @@ extract_LANDSAT_for_cuESTARFM<-function(LANDSAT_folder="Rasters/LANDSAT"){
     message(paste("Extracted", lastRow, "Landsat8 files"))
     
     
-    rename_LANDSAT_tif_R_NIR(filePatterns = filePatterns, bands = bands)
+    #rename_LANDSAT_tif_R_NIR(filePatterns = filePatterns, bands = bands)
   }
   
 }
@@ -209,7 +237,7 @@ rename_LANDSAT_tif_R_NIR<-function(filePatterns, bands, Extracted_folder="Raster
     for(k in 1:length(BandFiles)){
       myExt<-file_ext(BandFiles[k])
       myNewFileName<-paste(file_path_sans_ext(BandFiles[k]),"_", bands[j],".",myExt, sep="")
-      myNewFileName<-paste("Rasters/LANDSAT/LANDSAT_",bands[j],"/",basename(myNewFilename),sep="")
+      myNewFileName<-paste("Rasters/LANDSAT/LANDSAT_",bands[j],"/",basename(myNewFileName),sep="")
       file.rename(BandFiles[k], myNewFileName)
     }
   }
@@ -231,7 +259,7 @@ extractBands<-function(zipFile,filePatterns,extractDirectory="Rasters/LANDSAT/ex
 }
 
 
-reproject_MODIS_to_Landsat<-function(MODIS_folder="Rasters/MODIS/MODIS_B1",Landsat_folder="Rasters/LANDSAT/LANDSAT_R"){
+reproject_MODIS_to_Landsat<-function(MODIS_folder="Rasters/MODIS/MODIS_R",Landsat_folder="Rasters/LANDSAT/LANDSAT_R"){
   #################### Open a MODIS file
   ### Loads a MODIS raster from download and reprojects it to a Landsat CRS
   ####################
@@ -248,15 +276,15 @@ reproject_MODIS_to_Landsat<-function(MODIS_folder="Rasters/MODIS/MODIS_B1",Lands
     modisRaster<-raster(modisList[i])
 
     modisRasterUTM<-projectRaster(modisRaster,crs=landsatCRS)  
-    modisRasterUTM30m<-disaggregate(modisRasterUTM, res(modisRaster)/30)  # closest number to 30
+    modisRasterUTM30m<-disaggregate(modisRasterUTM, res(modisRasterUTM)/30)  # closest number to 30
     
     ### reproject again so that the pixels are exactly 30M.
-    modisRasterUTM30m<-projectRaster(modisRasterUTM30m, crs=landsatCRS, res=30)
+    modisRasterUTM30m<-projectRaster(modisRasterUTM30m, crs=landsatCRS, res=30,overwrite=TRUE)
     
     # Save the new Raster
     filename<-basename(modisList[i])
     filepath<-file.path("Rasters/MODIS/REPROJECTED",filename)
-    writeRaster(modisRasterUTM30m, filename = filepath)
+    writeRaster(modisRasterUTM30m, filename = filepath,overwrite=TRUE)
   }
   
   
@@ -265,7 +293,7 @@ reproject_MODIS_to_Landsat<-function(MODIS_folder="Rasters/MODIS/MODIS_B1",Lands
 
 
 
-crop_LANDSAT_to_MODIS<-function(MODIS_folder="Rasters/MODIS/REPROJECTED",Landsat_folder="Rasters/LANDSAT/LANDSAT_R"){
+crop_LANDSAT_to_MODIS<-function(MODIS_folder="Rasters/MODIS/REPROJECTED",Landsat_folder="Rasters/LANDSAT/LANDSAT_NIR"){
  
   ################
   # Load a Landsat Folder and CROP it to the REPROJECTED MODIS file
@@ -284,7 +312,7 @@ crop_LANDSAT_to_MODIS<-function(MODIS_folder="Rasters/MODIS/REPROJECTED",Landsat
     filename<-basename(landsatList[i])
     filepath<-file.path("Rasters/LANDSAT/CROPPED",filename)
     
-    writeRaster(landsatCrop, filename = filepath)
+    writeRaster(landsatCrop, filename = filepath,overwrite=TRUE)
     
     
   }
