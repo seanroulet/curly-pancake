@@ -21,7 +21,7 @@ library(stringr)
 library(chron)
 library(RCurl)
 
-cuESTARFM_pre_process(Modis_URL_List="Rasters/MODIS/GWE.txt",Index_to_calculate="NDVI"){
+cuESTARFM_pre_process<-function(Modis_URL_List="Rasters/MODIS/GWE.txt",Index_to_calculate="NDVI"){
   # Create all the necessary directories
   
   create_Directories_for_cuESTARFM()
@@ -208,7 +208,7 @@ rename_LANDSAT_tif_R_NIR<-function(filePatterns, bands, Extracted_folder="Raster
     for(k in 1:length(BandFiles)){
       myExt<-file_ext(BandFiles[k])
       myNewFileName<-paste(file_path_sans_ext(BandFiles[k]),"_", bands[j],".",myExt, sep="")
-      myNewFileName<-paste("Rasters/LANDSAT/LANDSAT_",bands[j],"/",basename(myNewFilename),sep="")
+      myNewFileName<-paste("Rasters/LANDSAT/LANDSAT_",bands[j], "/", basename(myNewFileName),sep="")
       file.rename(BandFiles[k], myNewFileName)
     }
   }
