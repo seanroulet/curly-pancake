@@ -10,6 +10,7 @@ library(sp)
 library(rgdal)
 library(stringr)
 library(raster)
+library(rgeos)
 #---------------------  
 shape_01=readOGR(shapefile_input) 
 #nombre del archivo de salida 
