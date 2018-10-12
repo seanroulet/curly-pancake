@@ -247,18 +247,21 @@ rename_LANDSAT_tif_R_NIR<-function(filePatterns, bands, Extracted_folder="Raster
   ## rename the files to put the R or NIR
   for(j in 1:length(filePatterns)){
     
-    BandFiles<-list.files(Extracted_folder,full.names=TRUE, pattern=filePatterns[j])
-    for(k in 1:length(BandFiles)){
-      myExt<-file_ext(BandFiles[k])
-      myNewFileName<-paste(file_path_sans_ext(BandFiles[k]),"_", bands[j],".",myExt, sep="")
-      myNewFileName<-paste("Rasters/LANDSAT/LANDSAT_",bands[j], "/", basename(myNewFileName),sep="")
-      ##### Debug
-      message(myNewFileName)
-      #########
-      file.rename(BandFiles[k], myNewFileName)
+    BandFiles<-list.files(Extracted_folder,full.names=TRUE, pattern=filePatterns[j],ignore.case=TRUE)
+    
+    if(length(BandFiles)!=0){
+      
+      for(k in 1:length(BandFiles)){
+        myExt<-file_ext(BandFiles[k])
+        myNewFileName<-paste(file_path_sans_ext(BandFiles[k]),"_", bands[j],".",myExt, sep="")
+        myNewFileName<-paste("Rasters/LANDSAT/LANDSAT_",bands[j], "/", basename(myNewFileName),sep="")
+        ##### Debug
+        message(myNewFileName)
+        #########
+        file.rename(BandFiles[k], myNewFileName)
+      }
     }
   }
-  
 }
 
 extractBands<-function(zipFile,filePatterns,extractDirectory="Rasters/LANDSAT/extracted"){
