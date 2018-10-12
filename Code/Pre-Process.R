@@ -272,10 +272,10 @@ extractBands<-function(zipFile,filePatterns,extractDirectory="Rasters/LANDSAT/ex
       if (!any(grepl(filePatterns[i],fileList)))bandFiles[i]="NULL"  else bandFiles[i]=which(grepl(filePatterns[i],fileList)==TRUE)
       
   }
-  bandFiles=bandFiles[!bandFiles=="NULL"]
- # DEBUG#####
-   message(bandFiles)
-  ###########
+  bandFiles<-bandFiles[!bandFiles=="NULL"]
+  # the bandFiles are seen as character...  so make them numeric.
+  bandFiles<-as.numeric(bandFiles)
+
   untar(zipFile, files = fileList[bandFiles], exdir = extractDirectory)
   
 }
