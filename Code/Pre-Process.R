@@ -140,8 +140,39 @@ download_MODIS_from_File_and_rename_to_band<-function(MODIS_url,band_id="b01"){
     
   }
 }
-
+#------------------------------------------------------------------------------------
 extract_LANDSAT_for_cuESTARFM<-function(LANDSAT_folder="Rasters/LANDSAT"){
+<<<<<<< HEAD
+=======
+  # Extract bands for L5
+  #### Get list of L5 files.
+  gzList<-list.files(LANDSAT_folder, full.names=TRUE, pattern="^LT05.*\\.gz")
+  lastRow<-length(gzList)
+  
+  ################################################
+  # Load all the necessary parameters for Landsat7
+  bands<-c("R","NIR")
+  #filePatterns<-c(ifPlatform("B3.tif","B3\\.tif$"),ifPlatform("B4.tif","B4\\.tif$"))
+  filePatterns<-c("B3\\.tif$","B4\\.tif$")
+  #########################################
+  
+  if(is.null(gzList)){
+    message("There are no images for L5 in the folder")
+    
+  }else{
+    for (i in 1:lastRow){
+      # go through each file to process it
+      # Extract the needed bands
+      zipFile<-gzList[i]
+      extractBands(zipFile=zipFile, filePatterns)
+    }
+    message(paste("Extracted", lastRow, "Landsat 5 files"))
+    
+    rename_LANDSAT_tif_R_NIR(filePatterns = filePatterns, bands = bands)
+    
+  }
+  
+>>>>>>> b7df45524af938afd815eef9607f0e225fef6bf2
   # Extract bands for L7
   
   #### Get list of L7 files.
@@ -179,7 +210,12 @@ extract_LANDSAT_for_cuESTARFM<-function(LANDSAT_folder="Rasters/LANDSAT"){
   ################################################
   # Load all the necessary parameters for Landsat8
   bands<-c("R","NIR")
+<<<<<<< HEAD
   filePatterns<-c("band4\\.tif$","band5\\.tif$")
+=======
+  #filePatterns<-c("B4\\.tif$","B5\\.tif$")
+  filePatterns<-c("B4.tif","B5.tif")
+>>>>>>> b7df45524af938afd815eef9607f0e225fef6bf2
   #########################################
   
   if(is.null(gzList)){
