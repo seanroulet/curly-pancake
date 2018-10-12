@@ -150,7 +150,7 @@ extract_LANDSAT_for_cuESTARFM<-function(LANDSAT_folder="Rasters/LANDSAT"){
   ################################################
   # Load all the necessary parameters for Landsat5
   
-  bands<-c("R","NIR")
+  bands<-c("R","NIR", "R", "NIR")
   filePatternsX<-c("band3\\.tif$","band4\\.tif$","B3\\.tif$","B4\\.tif$")
   filePatternsW<-c("band3.tif","band4.tif","B3.tif","B4.tif")
   
@@ -181,7 +181,7 @@ extract_LANDSAT_for_cuESTARFM<-function(LANDSAT_folder="Rasters/LANDSAT"){
   
   ################################################
   # Load all the necessary parameters for Landsat7
-  bands<-c("R","NIR")
+  bands<-c("R","NIR", "R", "NIR")
   filePatternsX<-c("band3\\.tif$","band4\\.tif$" ,"B3\\.tif$","B4\\.tif$")
   filePatternsW<-c("band3.tif","band4.tif","B3.tif","B4.tif")
   
@@ -214,7 +214,7 @@ extract_LANDSAT_for_cuESTARFM<-function(LANDSAT_folder="Rasters/LANDSAT"){
   
   ################################################
   # Load all the necessary parameters for Landsat8
-  bands<-c("R","NIR")
+  bands<-c("R","NIR", "R", "NIR")
 
   filePatternsX<-c("band4\\.tif$","band5\\.tif$","B4\\.tif$","B5\\.tif$")
 #  filePatterns<-c("B4\\.tif$","B5\\.tif$")
@@ -252,6 +252,9 @@ rename_LANDSAT_tif_R_NIR<-function(filePatterns, bands, Extracted_folder="Raster
       myExt<-file_ext(BandFiles[k])
       myNewFileName<-paste(file_path_sans_ext(BandFiles[k]),"_", bands[j],".",myExt, sep="")
       myNewFileName<-paste("Rasters/LANDSAT/LANDSAT_",bands[j], "/", basename(myNewFileName),sep="")
+      ##### Debug
+      message(myNewFileName)
+      #########
       file.rename(BandFiles[k], myNewFileName)
     }
   }
