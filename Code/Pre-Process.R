@@ -149,6 +149,8 @@ extract_LANDSAT_for_cuESTARFM<-function(LANDSAT_folder="Rasters/LANDSAT"){
   
   ################################################
   # Load all the necessary parameters for Landsat5
+  
+  bands<-c("R","NIR")
   filePatternsX<-c("band3\\.tif$","band4\\.tif$","B3\\.tif$","B4\\.tif$")
   filePatternsW<-c("band3.tif","band4.tif","B3.tif","B4.tif")
   
@@ -179,7 +181,7 @@ extract_LANDSAT_for_cuESTARFM<-function(LANDSAT_folder="Rasters/LANDSAT"){
   
   ################################################
   # Load all the necessary parameters for Landsat7
-  bands<-c("R","NIR" ,"R","NIR")
+  bands<-c("R","NIR")
   filePatternsX<-c("band3\\.tif$","band4\\.tif$" ,"B3\\.tif$","B4\\.tif$")
   filePatternsW<-c("band3.tif","band4.tif","B3.tif","B4.tif")
   
@@ -212,7 +214,7 @@ extract_LANDSAT_for_cuESTARFM<-function(LANDSAT_folder="Rasters/LANDSAT"){
   
   ################################################
   # Load all the necessary parameters for Landsat8
-  bands<-c("R","NIR","R","NIR")
+  bands<-c("R","NIR")
 
   filePatternsX<-c("band4\\.tif$","band5\\.tif$","B4\\.tif$","B5\\.tif$")
 #  filePatterns<-c("B4\\.tif$","B5\\.tif$")
@@ -267,10 +269,13 @@ extractBands<-function(zipFile,filePatterns,extractDirectory="Rasters/LANDSAT/ex
     bandFiles[i]<-
       
       #grep(filePatterns[i],fileList)
-      if (!any(grepl(filePatternsW[i],fileList)))bandFiles[i]="NULL"  else bandFiles[i]=which(grepl(filePatternsW[i],fileList)==TRUE)
+      if (!any(grepl(filePatterns[i],fileList)))bandFiles[i]="NULL"  else bandFiles[i]=which(grepl(filePatterns[i],fileList)==TRUE)
       
   }
-  bandFiles=bandFiles[!bandFiles=="NULL"] 
+  bandFiles=bandFiles[!bandFiles=="NULL"]
+ # DEBUG#####
+   message(bandFiles)
+  ###########
   untar(zipFile, files = fileList[bandFiles], exdir = extractDirectory)
   
 }
