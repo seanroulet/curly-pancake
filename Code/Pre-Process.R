@@ -155,7 +155,7 @@ extract_LANDSAT_for_cuESTARFM<-function(LANDSAT_folder="Rasters/LANDSAT"){
   filePatterns<-ifPlatform(filePatternsW,filePatternsX)
   #########################################
   
-  if(is.null(gzList)){
+  if(length(gzList)==0){
     message("There are no images for L5 in the folder")
     
   }else{
@@ -179,8 +179,8 @@ extract_LANDSAT_for_cuESTARFM<-function(LANDSAT_folder="Rasters/LANDSAT"){
   
   ################################################
   # Load all the necessary parameters for Landsat7
-  bands<-c("R","NIR","R","NIR")
-  filePatternsX<-c("band3\\.tif$","band4\\.tif$","B3\\.tif$","B4\\.tif$")
+  bands<-c("R","NIR" ,"R","NIR")
+  filePatternsX<-c("band3\\.tif$","band4\\.tif$" ,"B3\\.tif$","B4\\.tif$")
   filePatternsW<-c("band3.tif","band4.tif","B3.tif","B4.tif")
   
   filePatterns<-ifPlatform(filePatternsW,filePatternsX)
@@ -188,7 +188,7 @@ extract_LANDSAT_for_cuESTARFM<-function(LANDSAT_folder="Rasters/LANDSAT"){
   
   #########################################
   
-  if(is.null(gzList)){
+  if(length(gzList)==0){
     message("There are no images for L7 in the folder")
     
   }else{
@@ -223,7 +223,7 @@ extract_LANDSAT_for_cuESTARFM<-function(LANDSAT_folder="Rasters/LANDSAT"){
   
    #########################################
   
-  if(is.null(gzList)){
+  if(length(gzList)==0){
     message("There are no images for L8 in the folder")
     
   }else{
