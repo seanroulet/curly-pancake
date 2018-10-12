@@ -142,18 +142,17 @@ download_MODIS_from_File_and_rename_to_band<-function(MODIS_url,band_id="b01"){
 }
 #------------------------------------------------------------------------------------
 extract_LANDSAT_for_cuESTARFM<-function(LANDSAT_folder="Rasters/LANDSAT"){
-<<<<<<< HEAD
-=======
   # Extract bands for L5
   #### Get list of L5 files.
   gzList<-list.files(LANDSAT_folder, full.names=TRUE, pattern="^LT05.*\\.gz")
   lastRow<-length(gzList)
   
   ################################################
-  # Load all the necessary parameters for Landsat7
-  bands<-c("R","NIR")
-  #filePatterns<-c(ifPlatform("B3.tif","B3\\.tif$"),ifPlatform("B4.tif","B4\\.tif$"))
-  filePatterns<-c("B3\\.tif$","B4\\.tif$")
+  # Load all the necessary parameters for Landsat5
+  filePatternsX<-c("band3\\.tif$","band4\\.tif$","B3\\.tif$","B4\\.tif$")
+  filePatternsW<-c("band3.tif","band4.tif","B3.tif","B4.tif")
+  
+  filePatterns<-ifPlatform(filePatternsW,filePatternsX)
   #########################################
   
   if(is.null(gzList)){
@@ -172,7 +171,6 @@ extract_LANDSAT_for_cuESTARFM<-function(LANDSAT_folder="Rasters/LANDSAT"){
     
   }
   
->>>>>>> b7df45524af938afd815eef9607f0e225fef6bf2
   # Extract bands for L7
   
   #### Get list of L7 files.
@@ -181,8 +179,13 @@ extract_LANDSAT_for_cuESTARFM<-function(LANDSAT_folder="Rasters/LANDSAT"){
   
   ################################################
   # Load all the necessary parameters for Landsat7
-  bands<-c("R","NIR")
-  filePatterns<-c("band3\\.tif$","band4\\.tif$")
+  bands<-c("R","NIR","R","NIR")
+  filePatternsX<-c("band3\\.tif$","band4\\.tif$","B3\\.tif$","B4\\.tif$")
+  filePatternsW<-c("band3.tif","band4.tif","B3.tif","B4.tif")
+  
+  filePatterns<-ifPlatform(filePatternsW,filePatternsX)
+  
+  
   #########################################
   
   if(is.null(gzList)){
@@ -209,12 +212,15 @@ extract_LANDSAT_for_cuESTARFM<-function(LANDSAT_folder="Rasters/LANDSAT"){
   
   ################################################
   # Load all the necessary parameters for Landsat8
-  bands<-c("R","NIR")
+  bands<-c("R","NIR","R","NIR")
 
-  filePatterns<-c("band4\\.tif$","band5\\.tif$")
+  filePatternsX<-c("band4\\.tif$","band5\\.tif$","B4\\.tif$","B5\\.tif$")
 #  filePatterns<-c("B4\\.tif$","B5\\.tif$")
-#  filePatterns<-c("B4.tif","B5.tif")
+  filePatternsW<-c("band4.tif","band5.tif","B4.tif","B5.tif")
  
+  filePatterns<-ifPlatform(filePatternsW,filePatternsX)
+  
+  
    #########################################
   
   if(is.null(gzList)){
@@ -479,4 +485,24 @@ cuESTARFM_parameters_file<-function(MODIS_folder="Rasters/MODIS/REPROJECTED",LAN
     #############      FIN                    ###################################
     #############################################################################
   }
+}
+
+
+### function to check the OS and deliver different values depending on the answer
+
+ifPlatform<-function(ifWindows,ifUnix){
+  
+  #### if UNIX
+  if(.Platform$OS.type == "unix") {
+    myAnswer <- ifUnix
+    
+    ### if WINDOWS
+  } else if(.Platform$OS.type == "windows"){
+    myAnswer <- ifWindows
+    
+    ### if unknown.
+  } else {
+    myAnswer <- "Error  Unkown Platform"
+  }
+  return(myAnswer)
 }
