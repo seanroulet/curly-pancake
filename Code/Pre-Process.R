@@ -264,8 +264,13 @@ extractBands<-function(zipFile,filePatterns,extractDirectory="Rasters/LANDSAT/ex
   # set the extract directory
   fileList<-untar(zipFile, list=TRUE)
   for(i in 1:length(filePatterns)){
-    bandFiles[i]<-grep(filePatterns[i],fileList)
+    bandFiles[i]<-
+      
+      #grep(filePatterns[i],fileList)
+      if (!any(grepl(filePatternsW[i],fileList)))bandFiles[i]="NULL"  else bandFiles[i]=which(grepl(filePatternsW[i],fileList)==TRUE)
+      
   }
+  bandFiles=bandFiles[!bandFiles=="NULL"] 
   untar(zipFile, files = fileList[bandFiles], exdir = extractDirectory)
   
 }
