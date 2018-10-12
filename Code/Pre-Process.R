@@ -210,13 +210,12 @@ extract_LANDSAT_for_cuESTARFM<-function(LANDSAT_folder="Rasters/LANDSAT"){
   ################################################
   # Load all the necessary parameters for Landsat8
   bands<-c("R","NIR")
-<<<<<<< HEAD
+
   filePatterns<-c("band4\\.tif$","band5\\.tif$")
-=======
-  #filePatterns<-c("B4\\.tif$","B5\\.tif$")
-  filePatterns<-c("B4.tif","B5.tif")
->>>>>>> b7df45524af938afd815eef9607f0e225fef6bf2
-  #########################################
+#  filePatterns<-c("B4\\.tif$","B5\\.tif$")
+#  filePatterns<-c("B4.tif","B5.tif")
+ 
+   #########################################
   
   if(is.null(gzList)){
     message("There are no images for L8 in the folder")
