@@ -44,10 +44,11 @@ cuESTARFM_pre_process<-function(Modis_URL_List="Rasters/MODIS/GWE.txt",Index_to_
   extract_LANDSAT_for_cuESTARFM()
   
   # Reproject b01 to LANDSAT
-  reproject_MODIS_to_Landsat(MODIS_folder="Rasters/MODIS/MODIS_B1")
-  
+  #reproject_MODIS_to_Landsat(MODIS_folder="Rasters/MODIS/MODIS_R")
+  reproject_MODIS_to_Landsat(MODIS_folder="Rasters/MODIS/MODIS_R/",Landsat_folder="Rasters/LANDSAT/LANDSAT_R/")
   # Reproject b02 to LANDSAT
-  reproject_MODIS_to_Landsat(MODIS_folder="Rasters/MODIS/MODIS_B2")
+  #reproject_MODIS_to_Landsat(MODIS_folder="Rasters/MODIS/MODIS_NIR")
+  reproject_MODIS_to_Landsat(MODIS_folder="Rasters/MODIS/MODIS_NIR/",Landsat_folder="Rasters/LANDSAT/LANDSAT_NIR/")
   
   # crop Landsat images to MODIS extent
   crop_LANDSAT_to_MODIS()
@@ -288,14 +289,14 @@ extractBands<-function(zipFile,filePatterns,extractDirectory="Rasters/LANDSAT/ex
 }
 
 
-reproject_MODIS_to_Landsat<-function(MODIS_folder="Rasters/MODIS/MODIS_B1",Landsat_folder="Rasters/LANDSAT/LANDSAT_R"){
+reproject_MODIS_to_Landsat<-function(MODIS_folder="Rasters/MODIS/MODIS_R",Landsat_folder="Rasters/LANDSAT/LANDSAT_R"){
   #################### Open a MODIS file
   ### Loads a MODIS raster from download and reprojects it to a Landsat CRS
   ####################
-  modisList<-list.files(MODIS_folder, full.names=TRUE, pattern=".*\\.tif$")
+  modisList<-list.files(MODIS_folder, full.names=TRUE, pattern=".*\\.tif$",ignore.case=TRUE)
   
   # load a LANDSAT sample so we can get the crs, etc.
-  landsatList<-list.files(Landsat_folder, full.names=TRUE, pattern=".*\\.tif$")
+  landsatList<-list.files(Landsat_folder, full.names=TRUE, pattern=".*\\.tif$",ignore.case=TRUE)
   landsatSample<-raster(landsatList[1])
   landsatCRS<-crs(landsatSample)
   
@@ -305,7 +306,7 @@ reproject_MODIS_to_Landsat<-function(MODIS_folder="Rasters/MODIS/MODIS_B1",Lands
     modisRaster<-raster(modisList[i])
 
     modisRasterUTM<-projectRaster(modisRaster,crs=landsatCRS)  
-    modisRasterUTM30m<-disaggregate(modisRasterUTM, res(modisRaster)/30)  # closest number to 30
+    modisRasterUTM30m<-disaggregate(modisRasterUTM, res(modisRasterUTM)/30)  # closest number to 30
     
     ### reproject again so that the pixels are exactly 30M.
     modisRasterUTM30m<-projectRaster(modisRasterUTM30m, crs=landsatCRS, res=30)
@@ -347,71 +348,6 @@ crop_LANDSAT_to_MODIS<-function(MODIS_folder="Rasters/MODIS/REPROJECTED",Landsat
   }
   
 }
-
-
-
-#######################################################
-### Calculate the different Indices
-#######################################################
-
-###############
-## NDVI
-###############
-calcNDVI<-function(rasterStack){
-  NIR<-rasterStack$NIR
-  R<-rasterStack$R
-  message("NDVI")
-  ndviRaster<-overlay(NIR,R,
-                      fun=function(NIR,R){
-                        return(
-                          (R-NIR)/(R+NIR)
-                        )
-                      })
-    ndviRaster<-removeNDVIextremes(ndviRaster)
-  return(ndviRaster)
-}
-
-#######################
-# MSAVI2
-######################
-calcMSAVI2<-function(rasterStack){
-  NIR<-rasterStack$NIR
-  R<-rasterStack$R
-  message("MSAVI2")
-  MSAVI2Raster<-overlay(NIR,R,
-                        fun=function(NIR,R){
-                          return(
-                            (1/2)*((2*NIR + 1)-sqrt((2*NIR + 1)^2-8*(NIR - R)))
-                          )
-                        })
-  return(MSAVI2Raster)
-}
-
-#######################
-# WDRVI02
-######################
-calcWDRVI02<-function(rasterStack){
-  NIR<-rasterStack$NIR
-  R<-rasterStack$R
-  message("WDRVI02")
-  wdrvi02Raster<-overlay(NIR,R,
-                         fun=function(NIR,R){
-                           return(
-                             (0.2*NIR - R) / (0.2*NIR + R)
-                           )
-                         })
-  return(wdrvi02Raster)
-}
-
-
-
-
-
-
-
-
-
-
 
 directoryExists<-function(directory) {
   # check to see if there is a processing folder in workingDirectory 
