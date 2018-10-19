@@ -36,9 +36,9 @@ cuESTARFM_pre_process<-function(Modis_URL_List="Rasters/MODIS/GWE.txt",Index_to_
   rasterOptions(tmpdir = "Rasters/tmp")
   
   #Download and Rename b01
-  download_MODIS_from_File_and_rename_to_band(Modis_URL_list, "b01")
+  download_MODIS_from_File_and_rename_to_band(MODIS_url=Modis_URL_List, "b01")
   #Download and Rename b02
-  download_MODIS_from_File_and_rename_to_band(Modis_URL_list, "b02")
+  download_MODIS_from_File_and_rename_to_band(MODIS_url=Modis_URL_List, "b02")
   
   # Extract the LANDSAT bands from the LANDSAT tar.gz
   extract_LANDSAT_for_cuESTARFM()
