@@ -81,6 +81,7 @@ create_Directories_for_cuESTARFM<-function(){
   directoryExists("Rasters/tmp")
   directoryExists("Rasters/INDEX")
   directoryExists("Rasters/after_cuESTARFM")
+  directoryExists("Rasters/fill_cuESTARFM")
   directoryExists("Code/PARAMS")
   
   
