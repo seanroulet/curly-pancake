@@ -74,8 +74,8 @@ create_Directories_for_cuESTARFM<-function(){
   
   # MODIS directories
   directoryExists("Rasters/MODIS/REPROJECTED")
-  directoryExists("Rasters/MODIS/MODIS_B1")
-  directoryExists("Rasters/MODIS/MODIS_B2")
+  #directoryExists("Rasters/MODIS/MODIS_B1")
+  #directoryExists("Rasters/MODIS/MODIS_B2")
   
   directoryExists("Rasters/Ready_for_cuESTARFM")
   directoryExists("Rasters/tmp")
@@ -91,7 +91,7 @@ create_Directories_for_cuESTARFM<-function(){
 
 
 #---------------------------------------------------------------------
-download_MODIS_from_File_and_rename_to_band<-function(MODIS_url,band_id="b01"){
+download_MODIS_from_File_and_rename_to_band<-function(MODIS_url=Modis_URL_List,band_id="b01"){
   # Inputs
   ## MODIS_url -> text file with URLs of MODIS images to be downloaded
   ##              as generated from https://lpdaacsvc.cr.usgs.gov/appeears/explore
