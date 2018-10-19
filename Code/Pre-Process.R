@@ -80,7 +80,7 @@ create_Directories_for_cuESTARFM<-function(){
   directoryExists("Rasters/Ready_for_cuESTARFM")
   directoryExists("Rasters/tmp")
   directoryExists("Rasters/INDEX")
-  directoryExists("Rasters/PROCESSED")
+  directoryExists("Rasters/after_cuESTARFM")
   directoryExists("Code/PARAMS")
   
   
@@ -443,7 +443,7 @@ cuESTARFM_parameters_file<-function(MODIS_folder="Rasters/MODIS/REPROJECTED",LAN
   library(data.table)
   #--------------------------------------------
   param_path="Code/PARAMS/"
-  SINT_LS_path="Rasters/PROCESSED"
+  SINT_LS_path="Rasters/after_cuESTARFM"
   #-------------------------------------------- 
   #leo linea por linea el ejemplo de los parametros del programa
   cuESTARFM_parameters=readLines(cuESTARFM_parameters)
