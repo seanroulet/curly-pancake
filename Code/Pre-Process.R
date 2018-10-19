@@ -486,7 +486,7 @@ cuESTARFM_parameters_file<-function(MODIS_folder="Rasters/MODIS/REPROJECTED",LAN
     #--------------------------------------------------
     #agrego los nombres a usar para generar los landsat sinteticos
     MODIS_CAPTURED$SINT_LANDSAT=paste("SI_LS_",gsub(".*M_|$.*","",MODIS_CAPTURED$MODIS[i]),sep="")
-    SINT_LS_names= paste(basename(MODIS_CAPTURED$SINT_LANDSAT), collapse = " ")
+    SINT_LS_names= paste(SINT_LS_path,MODIS_CAPTURED$SINT_LANDSAT, collapse = " ")
     #Modifico el archivo de parametros
     #modifico las filas del archivo de texto que se actualizan para cada ejecucion del programa
     cuESTARFM_parameters[8]=paste("  IN_PAIR_MODIS_FNAME =",MODISLANDSAT_REF$MODIS[i],MODISLANDSAT_REF$MODIS[i+1])
