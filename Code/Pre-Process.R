@@ -437,7 +437,7 @@ cuESTARFM_parameters_file<-function(MODIS_folder="Rasters/Ready_for_cuESTARFM/Re
   library(data.table)
   #--------------------------------------------
   param_path="Code/PARAMS/"
-  SINT_LS_path="Rasters/after_cuESTARFM"
+  SINT_LS_path="Rasters/after_cuESTARFM/"
   #-------------------------------------------- 
   #leo linea por linea el ejemplo de los parametros del programa
   cuESTARFM_parameters=readLines(cuESTARFM_parameters)
@@ -475,12 +475,12 @@ cuESTARFM_parameters_file<-function(MODIS_folder="Rasters/Ready_for_cuESTARFM/Re
     #--------------------------------------------------
     MODIS_CAPTURED=MODIS_PRED[(MODIS_PRED$DATE > MODISLANDSAT_REF$DATE[i] & MODIS_PRED$DATE < MODISLANDSAT_REF$DATE[i+1]),]
     #genero una lista con los nombres a incluir
-    MODIS_names=paste(basename(MODIS_CAPTURED$MODIS), collapse = " ")
+    MODIS_names=paste((MODIS_CAPTURED$MODIS), collapse = " ")
     #rm(MODIS_CAPTURED)
     #--------------------------------------------------
     #agrego los nombres a usar para generar los landsat sinteticos
     MODIS_CAPTURED$SINT_LANDSAT=paste("SI_LS_",gsub(".*M_|$.*","",MODIS_CAPTURED$MODIS[i]),sep="")
-    SINT_LS_names= paste(SINT_LS_path,MODIS_CAPTURED$SINT_LANDSAT, collapse = " ")
+    SINT_LS_names= paste(SINT_LS_path,"/",MODIS_CAPTURED$SINT_LANDSAT,sep="",collapse = " ")
     #Modifico el archivo de parametros
     #modifico las filas del archivo de texto que se actualizan para cada ejecucion del programa
     cuESTARFM_parameters[8]=paste("  IN_PAIR_MODIS_FNAME =",MODISLANDSAT_REF$MODIS[i],MODISLANDSAT_REF$MODIS[i+1])
