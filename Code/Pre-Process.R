@@ -20,6 +20,7 @@ library(tools)
 library(stringr)
 library(chron)
 library(RCurl)
+library(xfun)
 
 cuESTARFM_pre_process<-function(Modis_URL_List="Rasters/MODIS/GWE.txt",Index_to_calculate="NDVI"){
   # Create all the necessary directories
@@ -36,26 +37,25 @@ cuESTARFM_pre_process<-function(Modis_URL_List="Rasters/MODIS/GWE.txt",Index_to_
   rasterOptions(tmpdir = "Rasters/tmp")
   
   #Download and Rename b01
-  download_MODIS_from_File_and_rename_to_band(MODIS_url=Modis_URL_List, "b01")
+    download_MODIS_from_File_and_rename_to_band(MODIS_url=Modis_URL_List, "b01")
   #Download and Rename b02
-  download_MODIS_from_File_and_rename_to_band(MODIS_url=Modis_URL_List, "b02")
-  
+    download_MODIS_from_File_and_rename_to_band(MODIS_url=Modis_URL_List, "b02")
   # Extract the LANDSAT bands from the LANDSAT tar.gz
-  extract_LANDSAT_for_cuESTARFM()
-  
+    extract_LANDSAT_for_cuESTARFM()
   # Reproject b01 to LANDSAT
-  #reproject_MODIS_to_Landsat(MODIS_folder="Rasters/MODIS/MODIS_R")
-  reproject_MODIS_to_Landsat(MODIS_folder="Rasters/MODIS/MODIS_R/",Landsat_folder="Rasters/LANDSAT/LANDSAT_R/")
+    reproject_MODIS_to_Landsat(MODIS_folder="Rasters/MODIS/MODIS_R/",Landsat_folder="Rasters/LANDSAT/LANDSAT_R/")
   # Reproject b02 to LANDSAT
-  #reproject_MODIS_to_Landsat(MODIS_folder="Rasters/MODIS/MODIS_NIR")
-  reproject_MODIS_to_Landsat(MODIS_folder="Rasters/MODIS/MODIS_NIR/",Landsat_folder="Rasters/LANDSAT/LANDSAT_NIR/")
-  
-  # crop Landsat images to MODIS extent
-  crop_LANDSAT_to_MODIS()
-  
-  # Calculate INDICES for MODIS
-  
-  # Calculate INDICES for LANDSAT
+    reproject_MODIS_to_Landsat(MODIS_folder="Rasters/MODIS/MODIS_NIR/",Landsat_folder="Rasters/LANDSAT/LANDSAT_NIR/")
+  # crop Landsat R images to MODIS extent
+    crop_LANDSAT_to_MODIS(MODIS_folder="Rasters/MODIS/REPROJECTED",Landsat_folder="Rasters/LANDSAT/LANDSAT_R")
+  # crop Landsat NIR images to MODIS extent
+    crop_LANDSAT_to_MODIS(MODIS_folder="Rasters/MODIS/REPROJECTED",Landsat_folder="Rasters/LANDSAT/LANDSAT_NIR")
+  # Generate stacks and with them generate NDVI
+    generate_NDVI(MODIS_folder="Rasters/MODIS/REPROJECTED",Landsat_folder="Rasters/LANDSAT/CROPPED")
+  # Rename Rasters as required to execute cuESTARFM
+    rename2process(MODIS_folder="Rasters/MODIS/NDVI",Landsat_folder="Rasters/LANDSAT/NDVI")
+  #Generate parameters files for cuESTARFM execution
+    ESTARFM_parameters_file()
   
   
 }
@@ -78,9 +78,12 @@ create_Directories_for_cuESTARFM<-function(){
   #directoryExists("Rasters/MODIS/MODIS_B1")
   #directoryExists("Rasters/MODIS/MODIS_B2")
   
-  directoryExists("Rasters/Ready_for_cuESTARFM")
+  directoryExists("Rasters/Ready_for_cuESTARFM/Ready_MODIS")
+  directoryExists("Rasters/Ready_for_cuESTARFM/Ready_LANDSAT")
   directoryExists("Rasters/tmp")
-  directoryExists("Rasters/INDEX")
+  directoryExists("Rasters/MODIS/NDVI")
+  directoryExists("Rasters/LANDSAT/NDVI")
+  
   directoryExists("Rasters/after_cuESTARFM")
   directoryExists("Rasters/fill_cuESTARFM")
   directoryExists("Code/PARAMS")
@@ -154,7 +157,7 @@ extract_LANDSAT_for_cuESTARFM<-function(LANDSAT_folder="Rasters/LANDSAT"){
   
   bands<-c("R","NIR", "R", "NIR")
   filePatternsX<-c("band3\\.tif$","band4\\.tif$","B3\\.tif$","B4\\.tif$")
-  filePatternsW<-c("band3.tif","band4.tif","B3.tif","B4.tif")
+  filePatternsW<-c("band3.TIF","band4.TIF","B3.TIF","B4.TIF")
   
   filePatterns<-ifPlatform(filePatternsW,filePatternsX)
   #########################################
@@ -183,9 +186,9 @@ extract_LANDSAT_for_cuESTARFM<-function(LANDSAT_folder="Rasters/LANDSAT"){
   
   ################################################
   # Load all the necessary parameters for Landsat7
-  bands<-c("R","NIR", "R", "NIR")
+  bands<-c("R","NIR","R","NIR")
   filePatternsX<-c("band3\\.tif$","band4\\.tif$" ,"B3\\.tif$","B4\\.tif$")
-  filePatternsW<-c("band3.tif","band4.tif","B3.tif","B4.tif")
+  filePatternsW<-c("band3.TIF","band4.TIF","B3.TIF","B4.TIF")
   
   filePatterns<-ifPlatform(filePatternsW,filePatternsX)
   
@@ -220,7 +223,7 @@ extract_LANDSAT_for_cuESTARFM<-function(LANDSAT_folder="Rasters/LANDSAT"){
 
   filePatternsX<-c("band4\\.tif$","band5\\.tif$","B4\\.tif$","B5\\.tif$")
 #  filePatterns<-c("B4\\.tif$","B5\\.tif$")
-  filePatternsW<-c("band4.tif","band5.tif","B4.tif","B5.tif")
+  filePatternsW<-c("band3.TIF","band4.TIF","B3.TIF","B4.TIF")
  
   filePatterns<-ifPlatform(filePatternsW,filePatternsX)
   
@@ -244,7 +247,7 @@ extract_LANDSAT_for_cuESTARFM<-function(LANDSAT_folder="Rasters/LANDSAT"){
   }
   
 }
-
+#####################################################################
 rename_LANDSAT_tif_R_NIR<-function(filePatterns, bands, Extracted_folder="Rasters/LANDSAT/extracted"){
   ## rename the files to put the R or NIR
   for(j in 1:length(filePatterns)){
@@ -293,10 +296,13 @@ reproject_MODIS_to_Landsat<-function(MODIS_folder="Rasters/MODIS/MODIS_R",Landsa
   #################### Open a MODIS file
   ### Loads a MODIS raster from download and reprojects it to a Landsat CRS
   ####################
+  library(raster)
+  library(rgdal)
+  
   modisList<-list.files(MODIS_folder, full.names=TRUE, pattern=".*\\.tif$",ignore.case=TRUE)
   
   # load a LANDSAT sample so we can get the crs, etc.
-  landsatList<-list.files(Landsat_folder, full.names=TRUE, pattern=".*\\.tif$",ignore.case=TRUE)
+  landsatList<-list.files(Landsat_folder, full.names=TRUE, pattern=".*\\.tif$",ignore.case=TRUE,include.dirs=TRUE)
   landsatSample<-raster(landsatList[1])
   landsatCRS<-crs(landsatSample)
   
@@ -322,18 +328,18 @@ reproject_MODIS_to_Landsat<-function(MODIS_folder="Rasters/MODIS/MODIS_R",Landsa
 }
 
 
-
+#--------------------------------------------
 crop_LANDSAT_to_MODIS<-function(MODIS_folder="Rasters/MODIS/REPROJECTED",Landsat_folder="Rasters/LANDSAT/LANDSAT_R"){
  
   ################
   # Load a Landsat Folder and CROP it to the REPROJECTED MODIS file
   ################
-  
+  library(raster)
   # get a sample MODIS file so we can crop to it.
-  modisList<-list.files(MODIS_folder, full.names=TRUE, pattern=".*\\.tif$")
+  modisList<-list.files(MODIS_folder, full.names=TRUE, pattern=".*\\.tif$",ignore.case=TRUE)
   modisSample<-raster(modisList[1])
   
-  landsatList<-list.files(Landsat_folder,full.names=TRUE, pattern=".*\\.tif$")
+  landsatList<-list.files(Landsat_folder,full.names=TRUE, pattern=".*\\.tif$",ignore.case=TRUE)
   #i<-1
   for (i in 1:length(landsatList)){
     landsatRaster<-raster(landsatList[i])
@@ -343,36 +349,86 @@ crop_LANDSAT_to_MODIS<-function(MODIS_folder="Rasters/MODIS/REPROJECTED",Landsat
     filepath<-file.path("Rasters/LANDSAT/CROPPED",filename)
     
     writeRaster(landsatCrop, filename = filepath)
-    
-    
+
   }
   
 }
+##################################################################################
+##################################################################################
 
-directoryExists<-function(directory) {
-  # check to see if there is a processing folder in workingDirectory 
-  # and check that it is clear.
-  if(dir.exists(directory)){
-    message(paste("Nothing to do,",directory," exists"))
-  }else{
-    # if not the case, create it.
-    
-    dir.create(directory,recursive=TRUE)
+generate_NDVI=function(MODIS_folder="Rasters/MODIS/REPROJECTED",Landsat_folder="Rasters/LANDSAT/CROPPED"){
+  
+  ################
+  # Generate two lists, with Landsat and MODIS bands
+  ################
+  # get a sample MODIS file so we can crop to it.
+  modisList<-list.files(MODIS_folder, full.names=TRUE, pattern=".*\\.tif$",ignore.case=TRUE)
+  landsatList<-list.files(Landsat_folder,full.names=TRUE, pattern=".*\\.tif$",ignore.case=TRUE)
+  #i<-1
+  
+  #generate a stack for landsat bands for each value of i
+  for (i in seq(1,length(landsatList),2)){
+    ##############################################
+    rasterStack=stack(landsatList[i],landsatList[i+1])
+    names(rasterStack)=c("R","NIR")
+    NDVI=calcNDVI(rasterStack)
+    #############################################
+    filename<-str_replace(basename(landsatList[i]),pattern="_01_T1_B3_R",replacement="_NDVI")
+    filepath<-file.path("Rasters/LANDSAT/NDVI",filename)
+    #############################################
+    writeRaster(NDVI, filename = filepath,overwrite=TRUE)
   }
-  
-  
+  #generate a stack for MODIS bands for each value of i
+  for (i in seq(1,length(modisList),2)){
+    ##############################
+    rasterStack=stack(modisList[i],modisList[i+1])
+    names(rasterStack)=c("NIR","R")
+    NDVI=calcNDVI(rasterStack)
+    ##############################
+    filename<-str_replace(basename(modisList[i]),pattern="M_",replacement="NDVI_M_")
+    filepath<-file.path("Rasters/MODIS/NDVI",filename)
+    #############################
+    writeRaster(NDVI, filename = filepath,overwrite=TRUE)
+  } 
 }
 
-removeNDVIextremes<-function(r1){
-  # remove values below -0.995, and make them -0.995
-  r1[r1<-0.995]=-0.995
-  # remove values above 0.995 and make them 0.995
-  r1[r1>0.995]=0.995
-  return(r1)
+############################################################
+############################################################
+
+rename2process<-function(MODIS_folder="Rasters/MODIS/NDVI",Landsat_folder="Rasters/LANDSAT/NDVI"){
+  ##################################
+  modisList<-list.files(MODIS_folder, full.names=TRUE, pattern=".tif",ignore.case=TRUE)
+  landsatList<-list.files(Landsat_folder,full.names=TRUE, pattern=".tif",ignore.case=TRUE)
+  ##################################
+  for (i in 1:length(modisList)){
+    filename<-basename(modisList[i])
+    filename<-str_replace(filename,pattern="NDVI_",replacement="")
+    filename<-str_replace(filename,pattern="_R",replacement="")
+    filename<-str_replace(filename,pattern="_NIR",replacement="")
+    filepath<-file.path("Rasters/Ready_for_cuESTARFM/Ready_MODIS",filename)
+    ######################
+    file.copy(modisList[i],filepath)
+    #####################
+  }
+  ##################################
+  for (i in 1:length(landsatList)){
+    filename<-basename(landsatList[i])
+    ######################
+    ano=substr(filename,18,21)
+    mes=substr(filename,22,23)
+    dia=substr(filename,24,25)
+    ######################
+    filename=paste("L_",ano,"_",mes,"_",dia,".tif",sep="")
+    filepath<-file.path("Rasters/Ready_for_cuESTARFM/Ready_LANDSAT",filename)
+    ######################
+    file.copy(modisList[i],filepath)
+  }
 }
+###############################################################################
+###############################################################################
 
 #--------------------------------------------
-cuESTARFM_parameters_file<-function(MODIS_folder="Rasters/MODIS/REPROJECTED",LANDSAT_folder="Rasters/LANDSAT/CROPPED",cuESTARFM_parameters="C:/Users/MC1988/Google Drive/PROFESIONALES-ACADEMICOS/AGRISAT/20180917_cuESTARFM/002_cuESTARFM parameters example/parameters_example.txt"){
+cuESTARFM_parameters_file<-function(MODIS_folder="Rasters/Ready_for_cuESTARFM/Ready_MODIS",LANDSAT_folder="Rasters/Ready_for_cuESTARFM/Ready_LANDSAT",cuESTARFM_parameters="C:/Users/MC1988/Google Drive/PROFESIONALES-ACADEMICOS/AGRISAT/20180917_cuESTARFM/002_cuESTARFM parameters example/parameters_example.txt"){
   #se procesa de a un par de bandas MODIS-LANDSAT por ejecucion Y se genera el archivo para ejecutar cuESTARFM
   library(stringr)
   library(chron)
@@ -385,12 +441,12 @@ cuESTARFM_parameters_file<-function(MODIS_folder="Rasters/MODIS/REPROJECTED",LAN
   #leo linea por linea el ejemplo de los parametros del programa
   cuESTARFM_parameters=readLines(cuESTARFM_parameters)
   #--------------------------------------------
-  MODIS_IN=gsub("/ ","/",list.files(MODIS_folder,pattern=".tif",full.names = T))
-  LANDSAT_IN=gsub("/ ","/",list.files(LANDSAT_folder,pattern=".tif",full.names = T))
+  MODIS_IN=list.files(MODIS_folder,pattern=".tif",full.names = T)
+  LANDSAT_IN=list.files(LANDSAT_folder,pattern=".tif",full.names = T)
   #--------------------------------------------
-  MODIS_IN=as.data.frame(basename(MODIS_IN),byrow=TRUE)
+  MODIS_IN=as.data.frame(MODIS_IN,byrow=TRUE)
   names(MODIS_IN)="MODIS"
-  LANDSAT_IN=as.data.frame(basename(LANDSAT_IN),byrow=TRUE)
+  LANDSAT_IN=as.data.frame(LANDSAT_IN,byrow=TRUE)
   names(LANDSAT_IN)="LANDSAT"
   #----------agrego fecha a los DF MODIS Y LANDSAT-------
   
@@ -434,13 +490,15 @@ cuESTARFM_parameters_file<-function(MODIS_folder="Rasters/MODIS/REPROJECTED",LAN
     txt_name=paste(param_path,"PARAM_",i,".txt",sep="")
     #exporto como txt el archivo de parametros con los datos
     writeLines(cuESTARFM_parameters,txt_name)
-    #############################################################################
-    #############      FIN                    ###################################
-    #############################################################################
+    
   }
 }
+#############################################################################
+#############      FIN                    ###################################
+#############################################################################
 
-
+#################################################################################
+#################################################################################
 ### function to check the OS and deliver different values depending on the answer
 
 ifPlatform<-function(ifWindows,ifUnix){
@@ -458,4 +516,83 @@ ifPlatform<-function(ifWindows,ifUnix){
     myAnswer <- "Error  Unkown Platform"
   }
   return(myAnswer)
+}
+########################################################
+#######################################################
+
+directoryExists<-function(directory) {
+  # check to see if there is a processing folder in workingDirectory 
+  # and check that it is clear.
+  if(dir.exists(directory)){
+    message(paste("Nothing to do,",directory," exists"))
+  }else{
+    # if not the case, create it.
+    
+    dir.create(directory,recursive=TRUE)
+  }
+  
+  
+}
+####################################################
+####################################################
+removeNDVIextremes<-function(r1){
+  # remove values below -0.995, and make them -0.995
+  r1[r1<-0.995]=-0.995
+  # remove values above 0.995 and make them 0.995
+  r1[r1>0.995]=0.995
+  return(r1)
+}
+
+
+#######################################################
+### Calculate the different Indices
+#######################################################
+
+###############
+## NDVI
+###############
+calcNDVI<-function(rasterStack){
+  NIR<-rasterStack$NIR
+  R<-rasterStack$R
+  message("NDVI")
+  ndviRaster<-overlay(NIR,R,
+                      fun=function(NIR,R){
+                        return(
+                          (R-NIR)/(R+NIR)
+                        )
+                      })
+  #ndviRaster<-removeNDVIextremes(ndviRaster)
+  return(ndviRaster)
+}
+
+#######################
+# MSAVI2
+######################
+calcMSAVI2<-function(rasterStack){
+  NIR<-rasterStack$NIR
+  R<-rasterStack$R
+  message("MSAVI2")
+  MSAVI2Raster<-overlay(NIR,R,
+                        fun=function(NIR,R){
+                          return(
+                            (1/2)*((2*NIR + 1)-sqrt((2*NIR + 1)^2-8*(NIR - R)))
+                          )
+                        })
+  return(MSAVI2Raster)
+}
+
+#######################
+# WDRVI02
+######################
+calcWDRVI02<-function(rasterStack){
+  NIR<-rasterStack$NIR
+  R<-rasterStack$R
+  message("WDRVI02")
+  wdrvi02Raster<-overlay(NIR,R,
+                         fun=function(NIR,R){
+                           return(
+                             (0.2*NIR - R) / (0.2*NIR + R)
+                           )
+                         })
+  return(wdrvi02Raster)
 }
