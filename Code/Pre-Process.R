@@ -21,6 +21,7 @@ library(stringr)
 library(chron)
 library(RCurl)
 library(xfun)
+library(data.table)
 
 cuESTARFM_pre_process<-function(Modis_URL_List="Rasters/MODIS/GWE.txt",Index_to_calculate="NDVI"){
   # Create all the necessary directories
@@ -55,7 +56,7 @@ cuESTARFM_pre_process<-function(Modis_URL_List="Rasters/MODIS/GWE.txt",Index_to_
   # Rename Rasters as required to execute cuESTARFM
     rename2process(MODIS_folder="Rasters/MODIS/NDVI",Landsat_folder="Rasters/LANDSAT/NDVI")
   #Generate parameters files for cuESTARFM execution
-    ESTARFM_parameters_file()
+    cuESTARFM_parameters_file()
   
   
 }
@@ -407,28 +408,28 @@ rename2process<-function(MODIS_folder="Rasters/MODIS/NDVI",Landsat_folder="Raste
     filename<-str_replace(filename,pattern="_NIR",replacement="")
     filepath<-file.path("Rasters/Ready_for_cuESTARFM/Ready_MODIS",filename)
     ######################
-    file.copy(modisList[i],filepath)
+    file.copy(modisList[i],filepath,overwrite=TRUE)
     #####################
   }
   ##################################
   for (i in 1:length(landsatList)){
     filename<-basename(landsatList[i])
     ######################
-    ano=substr(filename,18,21)
-    mes=substr(filename,22,23)
-    dia=substr(filename,24,25)
+    ano=substr(filename,27,30)
+    mes=substr(filename,31,32)
+    dia=substr(filename,33,34)
     ######################
     filename=paste("L_",ano,"_",mes,"_",dia,".tif",sep="")
     filepath<-file.path("Rasters/Ready_for_cuESTARFM/Ready_LANDSAT",filename)
     ######################
-    file.copy(modisList[i],filepath)
+    file.copy(modisList[i],filepath,overwrite=TRUE)
   }
 }
 ###############################################################################
 ###############################################################################
 
 #--------------------------------------------
-cuESTARFM_parameters_file<-function(MODIS_folder="Rasters/Ready_for_cuESTARFM/Ready_MODIS",LANDSAT_folder="Rasters/Ready_for_cuESTARFM/Ready_LANDSAT",cuESTARFM_parameters="C:/Users/MC1988/Google Drive/PROFESIONALES-ACADEMICOS/AGRISAT/20180917_cuESTARFM/002_cuESTARFM parameters example/parameters_example.txt"){
+cuESTARFM_parameters_file<-function(MODIS_folder="Rasters/Ready_for_cuESTARFM/Ready_MODIS",LANDSAT_folder="Rasters/Ready_for_cuESTARFM/Ready_LANDSAT",cuESTARFM_parameters="Code/PARAMS/parameters_example.txt"){
   #se procesa de a un par de bandas MODIS-LANDSAT por ejecucion Y se genera el archivo para ejecutar cuESTARFM
   library(stringr)
   library(chron)
